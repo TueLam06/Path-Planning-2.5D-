@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Kết quả chạy
+logs/
+
+# Dữ liệu thô và đầu ra sinh lại được
+rellis_25d_generator/raw_data/
+rellis_25d_generator/output_*/
+raw_photo/
+*.gif
+
+# Tài liệu, báo cáo (không đưa lên repo)
+*.md
+*.tex
+*.pdf
+docs/
+
+# Rác hệ điều hành
+.DS_Store
+Thumbs.db
+*:Zone.Identifier

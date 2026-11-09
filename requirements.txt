@@ -1,0 +1,7 @@
+numpy>=1.24
+scipy>=1.10
+matplotlib>=3.7
+Pillow>=9.5
+# Tùy chọn cho tools/photo_to_lidar.py:
+# torch
+# transformers
