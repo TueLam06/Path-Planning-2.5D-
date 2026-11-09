@@ -180,15 +180,15 @@ Xuất ra đúng cấu trúc mà `rellis_25d_generator` đọc được:
 
 ## 5. Backlog cải thiện thuật toán (theo ưu tiên)
 
-> Số dòng tính theo commit `dd37897`. Mỗi mục: **vấn đề → cách sửa gợi ý → cách kiểm chứng**.
+> Số dòng tính theo commit `4936970`. Mỗi mục: **vấn đề → cách sửa gợi ý → cách kiểm chứng**.
 
 ### P1: làm trước
-**a. Bộ test quá dễ** · `generate_testcases.py:46` (`CATEGORIES`), `:64` (`generate_for_map`)
+**a. Bộ test quá dễ** · `generate_testcases.py:35` (`CATEGORIES`), `:53` (`generate_for_map`)
 - Thêm tag độ khó: `detour_ratio` (đường tham chiếu / khoảng cách thẳng), `min_clearance` (khoảng trống nhỏ nhất dọc đường tham chiếu, dùng EDT trên `occupancy_2d`), `max_slope_on_ref`.
 - Sinh case có chủ đích cho từng tag (quota), thêm **case âm** (start/goal khác vùng liên thông → planner phải báo thất bại) và **case semantic-critical** (đường ngắn nhất theo `costmap_geom` đi qua bùn/vũng/bụi, nhưng vẫn có đường an toàn theo `costmap`).
 - Kiểm chứng: trên RELLIS dev, ít nhất 1 planner < 90% valid ở nhóm khó; bật/tắt ngữ nghĩa khác nhau rõ ở nhóm semantic-critical.
 
-**b. RRT\* chậm (khoảng 12 s/case)** · `planners/rrt_star_2_5d.py:68` (`_nearest_node` duyệt list O(n)), vòng tìm `near_nodes` trong `plan()` (`:110`) cũng O(n); `_is_edge_valid` (`:88`) gọi lại nhiều lần cho cùng cạnh.
+**b. RRT\* chậm (khoảng 12 s/case)** · `planners/rrt_star_2_5d.py:68` (`_nearest_node` duyệt list O(n)), vòng tìm `near_nodes` trong `plan()` (`:105`) cũng O(n); `_is_edge_valid` (`:88`) gọi lại nhiều lần cho cùng cạnh.
 - Dùng mảng numpy cho toạ độ node + `scipy.spatial.cKDTree` (dựng lại định kỳ) hoặc lưới băm; cache kết quả kiểm tra cạnh; dừng sớm khi đã tới goal và cost hội tụ.
 - Kiểm chứng: cùng `testcases.json`, valid không giảm, thời gian TB < 3 s.
 
@@ -206,11 +206,11 @@ Xuất ra đúng cấu trúc mà `rellis_25d_generator` đọc được:
 - Thêm kiểm tra roll/pitch bằng `project_footprint_3point` theo hướng bước di chuyển.
 - Đây thực chất là A\* trên lưới 16 hướng (không nội suy chi phí qua cạnh ô, không replanning). Hoặc hiện thực nội suy Field D\* thật, hoặc đổi tên trong báo cáo.
 
-**f. T-Hybrid A\* chỉ dùng pháp tuyến 1 ô và chỉ đi tiến** · `planners/thybrid_a_star.py:99` (`directions = [1]`), kiểm tra roll trong `plan()` (`:121`) dùng `project_pose_so3`
+**f. T-Hybrid A\* chỉ dùng pháp tuyến 1 ô và chỉ đi tiến** · `planners/thybrid_a_star.py:102` (`directions = [1]`), kiểm tra roll trong `plan()` (`:121`) dùng `project_pose_so3`
 - Thử primitive lùi (direction = −1, đã có hệ số phạt 1.2); kiểm tra roll bằng chân đế cho nhất quán với bộ đo.
 
 **g. Dung sai goal khác nhau giữa planner** · T-Hybrid 2.5 m, RRT\* 2.5 m, Field D\* 1.2 m (dừng khi ≤ 1.2 m), LazyPRM\* coi goal là 1 node của roadmap (phải tới đúng goal)
-- Đưa thành tham số chung truyền từ `benchnav/testsuite.py:49` (`build_planner`), bằng `--goal-tol` của runner.
+- Đưa thành tham số chung truyền từ `benchnav/testsuite.py:41` (`build_planner`), bằng `--goal-tol` của runner.
 
 ### P3
 **h. `is_segment_free` tốn thời gian** · `map_utils/hybrid_map.py:173` (lấy mẫu mỗi 2.5 cm). Field D\* chậm từ 0.13 lên 0.8 s sau khi thêm kiểm tra này.
@@ -219,7 +219,7 @@ Xuất ra đúng cấu trúc mà `rellis_25d_generator` đọc được:
 **i. LazyPRM\* chỉ đạt 45% trên bộ 40 case cũ** · `planners/lazy_prm_star_2_5d.py:19` (`num_samples`, `connection_radius`), `:46` (`_eval_edge`)
 - Thử lấy mẫu tập trung gần vùng hẹp (bridge sampling / Gaussian sampling), tăng mẫu thích ứng khi không tìm thấy đường.
 
-**j. `clear_around_point` sửa trực tiếp bản đồ** · `map_utils/hybrid_map.py:139`: planner tự xoá vật cản 1.0–1.2 m quanh start/goal. Bộ kiểm chứng dùng 1.2 m (`benchnav/testsuite.py:27`). Nếu đổi bán kính thì đổi cả hai.
+**j. `clear_around_point` sửa trực tiếp bản đồ** · `map_utils/hybrid_map.py:139`: planner tự xoá vật cản 1.0–1.2 m quanh start/goal. Bộ kiểm chứng dùng 1.2 m (`benchnav/testsuite.py:19`). Nếu đổi bán kính thì đổi cả hai.
 
 ---
 
