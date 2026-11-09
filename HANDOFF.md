@@ -1,6 +1,6 @@
 # HANDOFF: Cải thiện thuật toán 2.5D bằng các bộ dữ liệu mới
 
-> Bàn giao: 2026-11-09 (cập nhật khi chuyển máy) · Repo: https://github.com/TueLam06/Path-Planning-2.5D- (nhánh `main`)
+> Bàn giao: 2026-11-09 (cập nhật sau GĐ 0 trên máy mới) · Repo: https://github.com/TueLam06/Path-Planning-2.5D- (nhánh `main`)
 > Mục tiêu phiên tiếp theo: **chạy bộ auto-test trên các bộ dữ liệu mới → tìm điểm yếu → sửa thuật toán →
 > chạy lại để chứng minh cải thiện**, không làm hỏng những gì đang đúng.
 
@@ -11,7 +11,7 @@
 - [ ] Bộ test **phân biệt được thuật toán**: ít nhất 1 planner có valid < 90% ở nhóm khó (hiện tại mọi planner đạt 100% trên jikay8 nên chưa xếp hạng được).
 - [ ] Mỗi thay đổi thuật toán có **số liệu trước/sau** trong `logs/testsuite/history.csv`.
 - [ ] `false_success = 0` ở mọi lần chạy (đây là test hồi quy bắt buộc).
-- [ ] RRT\* trung bình < 3 s/case (hiện khoảng 12 s).
+- [ ] RRT\* trung bình < 3 s/case (hiện khoảng 13 s trên jikay).
 
 ---
 
@@ -35,6 +35,25 @@ python -m venv .venv && .venv\Scripts\activate && pip install -r requirements.tx
 python auto_pipeline.py --name smoke --download-sample --seqs 00000 --stride 1 --per-map 3 --workers 4
 ```
 Đạt nếu `logs/testsuite/smoke/REPORT.md` báo **0 lần báo success sai**.
+
+> Windows: nếu `python` báo "not found" (alias Microsoft Store) thì tạo venv bằng `py -3.14 -m venv .venv`. Chưa dùng 3.15 (có thể thiếu wheel scipy).
+
+---
+
+## 0.6 Lộ trình (đã chốt 2026-11-09)
+
+Thứ tự: **chốt định nghĩa benchmark → dựng bộ test khó → sửa planner**. Sửa thuật toán khi bộ test còn dễ thì không chứng minh được cải thiện.
+
+| GĐ | Việc | Mục §5 | Trạng thái |
+|---|---|---|---|
+| 0 | venv, smoke, baseline 40 case `--workers 1` trên máy mới | | ✅ xong (số liệu ở §1.3) |
+| 1 | Tăng tốc RRT\* (KD-tree / lưới băm, cache cạnh), mục tiêu < 3 s/case | P1-b | ⏭ tiếp theo |
+| 2 | Chốt định nghĩa benchmark: dung sai goal chung, kích thước xe Warthog | P1-c, P2-g | |
+| 3 | Bộ test khó: địa hình dốc tự sinh, tag độ khó, case âm; BenchNav `t_classes` → costmap | P1-a, §4.1, §4.1b | |
+| 4 | Sửa planner theo điểm yếu: Field D\* roll, T-Hybrid chân đế + lùi, làm mượt Z, LazyPRM\* | P2-d/e/f, P3 | |
+| song song | Tải RELLIS-3D đầy đủ (14 GB); chạy dev sau GĐ 1–2, test chỉ khi đã chốt | §4.2 | |
+
+Lý do GĐ 2 đứng trước GĐ 3: đổi dung sai goal và kích thước xe làm thay đổi chính bài toán, mọi baseline đo trước đó phải chạy lại.
 
 ---
 
@@ -70,6 +89,20 @@ python auto_pipeline.py --name smoke --download-sample --seqs 00000 --stride 1 -
 | BenchNav 100 bản đồ, chế độ geo (dừng ở 381/1.200 job, 5 worker) | 300 | 100% / 100% / 100% / 100% | 0.26 / 15.6 / 1.00 / 3.54 | Không có vật cản; max roll TB 14–17°, không vượt giới hạn; opt-ratio 0.96–1.01 |
 
 > Log chi tiết của 3 lần chạy này nằm ở máy cũ: `Documents/RELLIS 2.5D/4. logs/testsuite/{rellis_full_v1, rellis_full_v3_fixed, jikay8_v1}/`.
+
+**Baseline trên máy mới (GĐ 0, commit `9f3880c`, Python 3.14, numpy 2.5 / scipy 1.18).** Đây là mốc so sánh thời gian cho các thay đổi tiếp theo, không dùng số thời gian của máy cũ.
+
+| Lần chạy (`logs/testsuite/`) | Mode | Valid: T-Hybrid / RRT\* / Field D\* / LazyPRM\* | Thời gian TB (s) | False success |
+|---|---|---|---|---|
+| `base40_gd0` (40 case cũ, `--workers 1`) | sem | 75% / 55% / 100% / 45% | 0.20 / 1.69 / 0.60 / 0.44 | 0 |
+| `base40_gd0` | geo | 78% / 65% / 100% / 62% | 0.21 / 2.13 / 0.60 / 0.42 | 0 |
+| `smoke` (8 frame jikay, 24 case, 4 worker) | sem | 100% / 100% / 100% / 100% | 0.35 / 13.0 / 2.60 / 1.67 | 0 |
+| `smoke` | geo | 100% / 100% / 100% / 100% | 0.26 / 13.1 / 1.88 / 1.40 | 0 |
+
+- Valid trên 40 case cũ **khớp đúng** máy cũ → môi trường mới tái lập được kết quả.
+- Nhóm `long` trên 40 case: chỉ Field D\* đạt (100%), 3 planner còn lại 0%. Field D\* lại có max roll TB cao nhất (25–26°, vượt roll 22–25%) vì chưa kiểm tra roll (P2-e).
+- Opt. ratio < 1 (0.84–0.86) ở T-Hybrid/RRT\* nhiều khả năng do dừng sớm trong dung sai goal 2.5 m, còn đường tham chiếu đi tới đúng goal (Field D\* dung sai 1.2 m → 0.95; LazyPRM\* tới đúng goal → 1.02). Opt. ratio chưa so sánh công bằng được cho tới khi xong P2-g.
+- RRT\* trên jikay vẫn khoảng 13 s/case → GĐ 1.
 
 ---
 
