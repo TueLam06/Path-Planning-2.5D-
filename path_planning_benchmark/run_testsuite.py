@@ -1,26 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Chạy hàng loạt 4 planner 2.5D trên bộ test case (testsuite/testcases.json).
+"""Chạy hàng loạt 4 planner trên testsuite/testcases.json và kiểm chứng độc lập kết quả.
 
-Mỗi (case × planner × chế độ × lần chạy):
-  - dựng HybridMap mới, đặt seed cố định -> planner.plan(start, goal)
-  - PathEvaluator (độ dài 3D, roll/pitch, tau...) như run_benchmark.py
-  - KIỂM CHỨNG ĐỘC LẬP (không tin cờ success planner tự báo):
-      reached        : điểm cuối cách goal <= --goal-tol m
-      collision_free : không mẫu nào dọc đường (bước res/2) rơi vào ô vật cản
-      valid          = success & reached & collision_free
-      false_success  = planner báo success nhưng valid = False
-  - optimality_ratio = độ dài 3D / độ dài đường tham chiếu (Dijkstra lưới 8 hướng)
-  - roll_violation   = max roll > 0.55 rad (~31.5°, giới hạn trong code planner)
-
-Đầu ra trong "logs/testsuite/<tên>/": results.json, results.csv, summary.json,
-summary.md, summary_table.tex.
+valid = báo thành công + tới đích (<= --goal-tol) + không cắt ô vật cản.
+Đầu ra: logs/testsuite/<name>/ (results.json|csv, summary.json|md, summary_table.tex).
 
 Ví dụ:
-  python run_testsuite.py                         # bật ngữ nghĩa, 1 lần/case
-  python run_testsuite.py --modes sem geo --runs 3 --workers 4
-  python run_testsuite.py --planners "2.5D Field D*" --maps 00000_000500_25d_dataset
+  python run_testsuite.py --modes sem geo --workers 1 --name rellis_v1
+  python run_testsuite.py --name rellis_v1 --resume
 """
 import argparse
 import csv
@@ -56,7 +43,7 @@ def _get_map(map_path):
 
 
 def run_job(job):
-    """Chạy 1 (case, planner, mode, run). Hàm top-level để dùng được với multiprocessing."""
+    """Chạy 1 job (case, planner, mode, run)."""
     case, planner_name, mode, run_idx, seed, goal_tol = job
     use_sem = mode == "sem"
     data = _get_map(os.path.join(HERE, case["map_path"]))
@@ -69,7 +56,7 @@ def run_job(job):
     t0 = time.perf_counter()
     try:
         path, success = planner.plan(start, goal)
-    except Exception as exc:  # planner crash cũng là một kết quả cần ghi lại
+    except Exception as exc:
         path, success, err = [], False, f"{type(exc).__name__}: {exc}"
     t_plan = time.perf_counter() - t0
 
@@ -87,8 +74,6 @@ def run_job(job):
         "planning_time_sec": m["planning_time_sec"],
         "path_length_3d": m["path_length_3d"], "ref_len_3d": ref,
         "optimality_ratio": (m["path_length_3d"] / ref) if valid and ref > 0 else None,
-        # max_roll_deg/max_pitch_deg: đo thống nhất (chân đế 3 điểm) cho mọi planner;
-        # *_reported: giá trị planner tự tính (phương pháp khác nhau giữa các planner)
         "max_roll_deg": v["max_roll_fp_deg"], "max_pitch_deg": v["max_pitch_fp_deg"],
         "max_roll_reported_deg": m["max_roll_deg"], "max_pitch_reported_deg": m["max_pitch_deg"],
         "mean_traversability": m["mean_traversability"],
@@ -248,7 +233,7 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
     partial_path = os.path.join(out_dir, "results.partial.jsonl")
 
-    # Ghi từng kết quả ngay khi xong -> chạy dài (hàng giờ) bị ngắt vẫn không mất dữ liệu
+    # Ghi từng kết quả để có thể resume
     records = []
     if args.resume and os.path.isfile(partial_path):
         with open(partial_path, encoding="utf-8") as f:
@@ -258,8 +243,8 @@ def main():
                     try:
                         records.append(json.loads(line))
                     except json.JSONDecodeError:
-                        pass  # dòng cuối có thể bị cắt khi tiến trình bị kill
-        # Ghi lại file sạch (bỏ dòng hỏng) để bản ghi mới không dính vào dòng bị cắt dở
+                        pass
+        # Ghi lại file, bỏ dòng hỏng
         with open(partial_path, "w", encoding="utf-8") as f:
             for r in records:
                 f.write(json.dumps(r, ensure_ascii=False) + "\n")

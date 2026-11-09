@@ -164,18 +164,14 @@ class HybridMap:
         return None
 
     def get_elevation(self, x, y):
-        """Nearest-cell elevation z at (x,y), same cell convention as world_to_grid (round)."""
+        """Elevation of the cell containing (x, y)."""
         g = self.world_to_grid(x, y)
         if g is not None:
             return float(self.Z[g[1], g[0]])
         return 0.0
 
     def is_segment_free(self, x1, y1, x2, y2, step=None):
-        """
-        True nếu đoạn thẳng (x1,y1)->(x2,y2) không đi qua ô vật cản / ra ngoài bản đồ.
-        Lấy mẫu dày theo bước `step` (mặc định 1/8 ô lưới) để không nhảy qua vật cản mỏng
-        hay cắt góc ô vật cản.
-        """
+        """True nếu đoạn thẳng không cắt ô vật cản hay ra ngoài bản đồ (lấy mẫu mỗi 1/8 ô)."""
         if step is None:
             step = 0.125 * self.resolution
         n = max(int(np.ceil(np.hypot(x2 - x1, y2 - y1) / step)), 1)

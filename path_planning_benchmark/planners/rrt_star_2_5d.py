@@ -86,12 +86,7 @@ class RRTStar25D:
         return RRTStar25DNode(nx, ny, nyaw)
 
     def _is_edge_valid(self, n1, n2, pose_spacing=0.4):
-        """
-        Checks if straight edge between n1 and n2 is collision-free and feasible.
-        - Vật cản: kiểm tra dày theo nửa ô lưới (trước đây chỉ 5 điểm/cạnh nên cạnh dài
-          3.5 m bỏ sót vật cản mỏng).
-        - Roll/pitch: kiểm tra mỗi ~pose_spacing m, yaw nội suy theo cung ngắn nhất.
-        """
+        """Edge is collision-free and within roll/pitch limits (pose checked every pose_spacing m)."""
         if not self.map.is_segment_free(n1.x, n1.y, n2.x, n2.y):
             return False
         length = np.hypot(n2.x - n1.x, n2.y - n1.y)
@@ -182,8 +177,7 @@ class RRTStar25D:
 
         if best_goal_node is not None:
             path = self._reconstruct_path(best_goal_node)
-            # Chỉ nối điểm goal chính xác khi đoạn cuối (có thể dài tới goal_tolerance) hợp lệ;
-            # trước đây nối thẳng không kiểm tra nên đường có thể cắt qua vật cản.
+            # Append exact goal only if the last segment is valid
             goal_node = RRTStar25DNode(gx, gy, gyaw)
             if self._is_edge_valid(best_goal_node, goal_node):
                 gz = self.map.get_elevation(gx, gy)

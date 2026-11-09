@@ -1,26 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-photo_to_lidar.py - Chuyển 1 ảnh chụp đời thực (RGB) thành đám mây điểm kiểu LiDAR
-(.bin + .label chuẩn SemanticKITTI) để đưa thẳng vào rellis_25d_generator.
+"""Ảnh RGB -> đám mây điểm kiểu LiDAR (.bin + .label) cho rellis_25d_generator.
 
-Quy trình:
-  1. Depth Anything V2 (Metric Outdoor)  -> độ sâu theo mét cho từng pixel
-  2. SegFormer (ADE20K)                  -> nhãn ngữ nghĩa, ánh xạ sang ID RELLIS-3D
-  3. Chiếu ngược pixel -> điểm 3D bằng thông số camera (EXIF hoặc FOV giả định)
-  4. RANSAC mặt đất -> xoay cho mặt đất nằm ngang (bù góc nghiêng camera)
-  5. (tuỳ chọn) Giả lập mẫu quét 64 tia của Ouster OS1-64
-  6. Lưu <out>/<seq>/os1_cloud_node_kitti_bin/<frame>.bin   (float32 N x 4: x y z intensity)
-       và <out>/<seq>/os1_cloud_node_semantickitti_label_id/<frame>.label (uint32)
-     + file .ply có màu để xem bằng CloudCompare / MeshLab.
+Depth Anything V2 (độ sâu) + SegFormer (nhãn -> ID RELLIS) -> chiếu ngược -> cân mặt đất (RANSAC).
+Cần: pip install torch transformers
 
-Hệ trục đầu ra giống LiDAR RELLIS: x tiến về trước, y sang trái, z hướng lên, gốc tại camera.
-
-Cài đặt:
-  pip install torch transformers pillow numpy
-
-Ví dụ (chạy từ thư mục gốc repo):
-  python tools/photo_to_lidar.py anh.jpg --out raw_photo --seq 00000 --frame 000000 --simulate-os1
+Ví dụ (từ gốc repo):
+  python tools/photo_to_lidar.py anh.jpg --out raw_photo --simulate-os1
   python rellis_25d_generator/main.py --data-dir raw_photo --seq 00000 --frame 000000 --out rellis_25d_generator/output_photo
 """
 
@@ -64,9 +50,7 @@ GROUND_IDS = {1, 3, 10, 23, 31, 33, 34}
 SKY_ID = 7
 
 
-# ----------------------------------------------------------------------------
 # Thông số camera
-# ----------------------------------------------------------------------------
 def estimate_intrinsics(img: Image.Image, hfov_deg: float):
     """fx từ EXIF FocalLengthIn35mmFilm nếu có, ngược lại từ FOV ngang giả định."""
     W, H = img.size
@@ -85,9 +69,7 @@ def estimate_intrinsics(img: Image.Image, hfov_deg: float):
     return fx, fx, W / 2.0, H / 2.0
 
 
-# ----------------------------------------------------------------------------
 # Mô hình học sâu (import lười để phần hình học chạy được không cần torch)
-# ----------------------------------------------------------------------------
 def predict_depth(img: Image.Image, model_id: str, device: str):
     import torch
     from transformers import AutoImageProcessor, AutoModelForDepthEstimation
@@ -124,9 +106,7 @@ def predict_semantics(img: Image.Image, model_id: str, device: str):
     return lut[ade]
 
 
-# ----------------------------------------------------------------------------
 # Hình học
-# ----------------------------------------------------------------------------
 def backproject(depth, labels, rgb, fx, fy, cx, cy, max_depth):
     """Pixel -> điểm 3D trong hệ LiDAR (x trước, y trái, z lên), bỏ trời và điểm quá xa."""
     H, W = depth.shape
@@ -220,9 +200,7 @@ def simulate_os1_64(pts, vfov=(-16.6, 16.6), rings=64, h_res=1024, tol_deg=0.06)
     return keep
 
 
-# ----------------------------------------------------------------------------
 # Lưu file
-# ----------------------------------------------------------------------------
 def save_outputs(pts, labels, rgb, out_root: Path, seq: str, frame: str):
     bin_dir = out_root / seq / "os1_cloud_node_kitti_bin"
     lbl_dir = out_root / seq / "os1_cloud_node_semantickitti_label_id"

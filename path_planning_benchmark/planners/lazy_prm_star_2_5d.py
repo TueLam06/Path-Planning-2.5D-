@@ -73,8 +73,7 @@ class LazyPRMStar25D:
             self.edge_cache[key] = (float('inf'), False)
             return float('inf'), False
 
-        # 2b. Ràng buộc lật thật của xe: chiếu chân đế 3 điểm theo hướng cạnh và kiểm tra
-        #     roll/pitch (trước đây chỉ so độ dốc ô với roll_max -> đường vẫn lật > 31.5°).
+        # 2b. Footprint roll/pitch along the edge
         yaw_seg = np.arctan2(n2.y - n1.y, n2.x - n1.x)
         n_pose = max(int(np.ceil(dist_2d / 0.4)) + 1, 2)
         for t in np.linspace(0.0, 1.0, n_pose):

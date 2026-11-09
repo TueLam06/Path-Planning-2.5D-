@@ -170,8 +170,7 @@ class THybridAStar:
                     return direct_path, True
 
             for nx, ny, nyaw, steer, direction in self._get_motion_primitives(current):
-                # 1. 2D Occupancy Check dọc cả bước di chuyển (không chỉ điểm cuối),
-                #    tránh nhảy qua vật cản mỏng hơn step_size
+                # 1. Collision check along the whole step
                 if not self.map.is_segment_free(current.x, current.y, nx, ny):
                     continue
 
@@ -209,7 +208,6 @@ class THybridAStar:
         if not self.map.is_segment_free(current.x, current.y, gx, gy):
             return None
 
-        # Nội suy yaw theo cung ngắn nhất (tránh quay vòng khi yaw đi qua ±pi)
         dyaw = (gyaw - current.yaw + np.pi) % (2 * np.pi) - np.pi
 
         curr_node = current

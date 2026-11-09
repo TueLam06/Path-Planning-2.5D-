@@ -1,13 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Hàm dùng chung cho bộ test hàng loạt (generate_testcases.py / run_testsuite.py).
-
-- Nạp bản đồ 2.5D (.npz/.pt/.npy) một lần, dựng HybridMap mới cho mỗi lần chạy
-  (các planner gọi clear_around_point nên làm bẩn bản đồ).
-- Đồ thị lưới 8 hướng có trọng số = khoảng cách 3D để tính đường tham chiếu
-  (shortest path chuẩn trên lưới) bằng scipy.sparse.csgraph.dijkstra.
-- Kiểm chứng độc lập đường đi của planner: tới đích, không cắt vật cản.
-"""
+"""Tiện ích dùng chung cho bộ test: nạp bản đồ, dựng planner, đồ thị lưới tham chiếu, kiểm chứng đường đi."""
 import os
 import sys
 
@@ -29,7 +21,7 @@ ROLL_LIMIT_DEG = float(np.degrees(0.55))
 
 
 def load_map_data(path):
-    """Đọc file bản đồ một lần, trả về dict dùng lại để dựng HybridMap."""
+    """Đọc bản đồ một lần để dựng lại HybridMap nhiều lần."""
     X, Y, Z, res, meta = MapLoader().load_map(path, return_metadata=True)
     return {"X": X, "Y": Y, "Z": Z, "res": res, "meta": meta, "path": path}
 
@@ -64,14 +56,9 @@ def build_planner(name, hm):
     raise ValueError(f"Planner không hỗ trợ: {name}")
 
 
-# ----------------------------------------------------------------------------
 # Đồ thị lưới & đường tham chiếu
-# ----------------------------------------------------------------------------
 def build_grid_graph(Z, free, res):
-    """
-    Đồ thị 8 hướng trên các ô free. Trọng số cạnh = độ dài 3D giữa tâm 2 ô.
-    :return: (csr_graph, node_of_cell[ny,nx] (-1 nếu không phải node), cell_of_node[flat])
-    """
+    """Đồ thị 8 hướng trên ô free, trọng số = độ dài 3D. Trả về (G, node_of_cell, cell_of_node)."""
     ny, nx = free.shape
     node_of_cell = -np.ones((ny, nx), dtype=np.int64)
     cell_of_node = np.flatnonzero(free.ravel())
@@ -109,16 +96,9 @@ def reconstruct(pred, src, dst):
     return path[::-1]
 
 
-# ----------------------------------------------------------------------------
 # Kiểm chứng đường đi
-# ----------------------------------------------------------------------------
 def verify_path(path, start, goal, data, use_semantic, goal_tol):
-    """
-    Kiểm tra độc lập với cờ success mà planner tự báo:
-      - reached: điểm cuối cách goal <= goal_tol (m)
-      - collisions: số mẫu (bước res/2 dọc từng đoạn) rơi vào ô vật cản / ngoài bản đồ
-      - lethal/soft hits: số waypoint nằm trên lớp ngữ nghĩa nguy hiểm
-    """
+    """Kiểm chứng đường đi: tới đích, số mẫu va chạm, roll/pitch chân đế, hazard hits."""
     out = {"reached": False, "goal_error_m": None, "collision_samples": None,
            "lethal_waypoint_hits": None, "soft_hazard_hits": None, "mean_costmap": None,
            "max_roll_fp_deg": None, "max_pitch_fp_deg": None}
@@ -134,7 +114,7 @@ def verify_path(path, start, goal, data, use_semantic, goal_tol):
     out["goal_error_m"] = err
     out["reached"] = err <= goal_tol
 
-    step = hm.resolution * 0.125   # cùng bước với HybridMap.is_segment_free
+    step = hm.resolution * 0.125
     collisions = 0
     for a, b in zip(pts[:-1], pts[1:]):
         n = max(int(np.ceil(np.hypot(*(b - a)) / step)), 1)
@@ -144,8 +124,7 @@ def verify_path(path, start, goal, data, use_semantic, goal_tol):
                 collisions += 1
     out["collision_samples"] = collisions
 
-    # Roll/pitch đo THỐNG NHẤT cho mọi planner (chân đế 3 điểm, yaw theo hướng di chuyển).
-    # Mỗi planner tự báo roll bằng cách khác nhau (pháp tuyến ô vs chân đế) nên không so được.
+    # Roll/pitch đo thống nhất bằng chân đế 3 điểm cho mọi planner
     rolls, pitches = [], []
     for i in range(len(pts)):
         a, b = (pts[i], pts[i + 1]) if i + 1 < len(pts) else (pts[i - 1], pts[i])

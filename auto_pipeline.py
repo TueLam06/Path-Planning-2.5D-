@@ -1,30 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-auto_pipeline.py - Chạy TỰ ĐỘNG toàn bộ quy trình đánh giá, một lệnh từ đầu tới cuối:
+"""Chạy toàn bộ: LiDAR -> bản đồ 2.5D -> test case -> planner -> REPORT.md.
 
-  [1] maps   : LiDAR RELLIS (.bin/.label, thư mục hoặc .zip) -> bản đồ 2.5D .npz
-               (rellis_25d_generator, lấy 1 frame mỗi --stride frame)
-  [2] cases  : sinh test case start/goal (generate_testcases.py)
-  [3] run    : chạy 4 planner (run_testsuite.py, ghi từng kết quả, tự resume)
-  [4] report : ghi REPORT.md (kết quả cần cho báo cáo) + nối 1 dòng/planner vào history.csv
-
-Mọi bước đều IDEMPOTENT: chạy lại cùng --name sẽ bỏ qua phần đã xong, nên máy tắt / mất điện
-giữa chừng chỉ cần chạy lại đúng lệnh cũ.
-
-Kết quả: "logs/testsuite/<name>/"
-  REPORT.md            <- file tổng hợp để đọc / dán vào báo cáo
-  STATUS.txt           <- trạng thái hiện tại (running / done / failed + bước)
-  pipeline.log         <- toàn bộ log
-  summary_table.tex, summary.md, results.csv, results.json, testcases.json
-"logs/testsuite/history.csv" <- lịch sử mọi lần chạy (so sánh giữa các phiên bản code)
+Mọi bước bỏ qua phần đã xong; chạy lại cùng --name để tiếp tục.
+Kết quả: logs/testsuite/<name>/ (REPORT.md, STATUS.txt, results.csv, ...) và logs/testsuite/history.csv.
 
 Ví dụ:
-  # Thử nhanh trên bộ mẫu 8 frame (tự tải nếu chưa có)
   python auto_pipeline.py --name sample_quick --download-sample --seqs 00000 --stride 1 --per-map 3 --workers 4
-
-  # Bộ đầy đủ (đã đặt các file .zip RELLIS vào rellis_25d_generator/raw_data/ hoặc --data-dir)
-  python auto_pipeline.py --name rellis_full --seqs 00000 00001 00002 00003 00004 --stride 50 --workers 6
+  python auto_pipeline.py --name rellis_full --stride 50 --workers 6
 """
 import argparse
 import csv
@@ -51,9 +34,7 @@ BENCH_DIR = os.path.join(CODE_DIR, "path_planning_benchmark")
 LOG_ROOT = os.path.abspath(os.path.join(CODE_DIR, "logs", "testsuite"))
 
 
-# ----------------------------------------------------------------------------
 # Log ra cả màn hình và file
-# ----------------------------------------------------------------------------
 class Logger:
     def __init__(self, path):
         self.f = open(path, "a", encoding="utf-8")
@@ -76,7 +57,7 @@ def set_status(run_dir, state, step, extra=""):
 
 
 def run_cmd(cmd, log, cwd):
-    """Chạy lệnh con, stream log ra màn hình + file. Ném lỗi nếu exit code != 0."""
+    """Chạy lệnh con, ghi log; lỗi nếu exit code != 0."""
     log("$ " + " ".join(f'"{c}"' if " " in c else c for c in cmd))
     env = dict(os.environ, PYTHONIOENCODING="utf-8", MPLBACKEND="Agg")
     p = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -98,12 +79,10 @@ def git_info():
         return "unknown"
 
 
-# ----------------------------------------------------------------------------
 # [1] Sinh bản đồ
-# ----------------------------------------------------------------------------
 def step_maps(args, maps_dir, log):
     sys.path.insert(0, GEN_DIR)
-    from config import RellisConfig          # noqa: E402  (module của rellis_25d_generator)
+    from config import RellisConfig          # noqa: E402
     from data_loader import RellisDataLoader, download_sample  # noqa: E402
     from pipeline import process_single_frame  # noqa: E402
 
@@ -151,7 +130,7 @@ def step_maps(args, maps_dir, log):
             if k % 25 == 0 or k == len(plan):
                 log(f"  bản đồ {k}/{len(plan)} (mới {n_new}, có sẵn {n_skip}, lỗi {n_err}) "
                     f"{time.time() - t0:.0f}s")
-    # Chỉ dùng đúng các bản đồ của lần chạy này (thư mục bản đồ dùng chung có thể chứa bản đồ cũ)
+    # Danh sách bản đồ của riêng lần chạy này
     with open(maps_list_path(args), "w", encoding="utf-8") as f:
         f.write("\n".join(sorted(map_files)) + "\n")
     if args.method == "group1" and len(set(os.path.basename(p) for p in map_files)) < len(map_files):
@@ -163,9 +142,7 @@ def maps_list_path(args):
     return os.path.join(LOG_ROOT, args.name, "maps_list.txt")
 
 
-# ----------------------------------------------------------------------------
 # [4] Báo cáo
-# ----------------------------------------------------------------------------
 def _pct(x):
     return "–" if x is None else f"{100 * x:.0f}%"
 
@@ -187,7 +164,6 @@ def step_report(args, run_dir, stage_info, t_start, log):
     cases = tc["cases"]
     git = git_info()
 
-    # Case khó nhất: nhiều planner thất bại nhất
     by_case = {}
     for r in results:
         by_case.setdefault(r["case_id"], []).append(r)

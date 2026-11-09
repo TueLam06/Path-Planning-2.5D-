@@ -1,22 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Sinh bộ test case start/goal tự động cho benchmark quy hoạch 2.5D.
-
-Với mỗi bản đồ:
-  1. Dựng HybridMap (mặc định bật ngữ nghĩa: lớp vật cản chặt nhất) -> vùng free.
-  2. Ô hợp lệ làm start/goal: free, đã quan sát được (observed/valid mask nếu có),
-     cách vật cản >= --margin m và cách mép bản đồ >= --border m.
-  3. Đồ thị lưới 8 hướng trọng số 3D -> Dijkstra từ start: goal phải CÙNG vùng liên
-     thông (luôn tồn tại đường đi), độ dài đường tham chiếu rơi vào 1 nhóm độ khó:
-        short  : 8–15 m   | medium : 15–25 m   | long : >= 25 m
-  4. Hướng (yaw) start/goal lấy theo hướng của đường tham chiếu.
-
-Kết quả: testsuite/testcases.json (tái lập được nhờ --seed).
+"""Sinh test case start/goal: chỉ trên ô đo thật, cách vật cản >= --margin, luôn có đường đi
+(Dijkstra lưới 8 hướng, trọng số 3D), chia nhóm short/medium/long theo độ dài đường tham chiếu.
 
 Ví dụ:
-  python generate_testcases.py                       # map_data/*.npz + mẫu jikay
-  python generate_testcases.py --per-map 12 --maps "map_data/*.npz"
+  python generate_testcases.py
+  python generate_testcases.py --maps "../rellis_25d_generator/output_25d/*.npz" --per-map 12
 """
 import argparse
 import glob
@@ -73,7 +62,7 @@ def generate_for_map(map_path, n_cases, rng, margin, border, min_euclid, max_tri
     endpoint[:b, :] = endpoint[-b:, :] = False
     endpoint[:, :b] = endpoint[:, -b:] = False
 
-    # Chẩn đoán: vùng free liên thông lớn nhất có phải địa hình đo thật không?
+    # Tỷ lệ ô đo thật trong vùng free lớn nhất
     lab, n_comp = label(free, structure=np.ones((3, 3), dtype=bool))
     sizes = np.bincount(lab.ravel())[1:]
     main = lab == (int(np.argmax(sizes)) + 1) if n_comp else np.zeros_like(free)
@@ -110,7 +99,6 @@ def generate_for_map(map_path, n_cases, rng, margin, border, min_euclid, max_tri
         eu = np.hypot(cx - cx[k], cy - cy[k]) * res
         ok = np.isfinite(d_goal) & (eu >= min_euclid)
 
-        # Ưu tiên nhóm còn thiếu nhiều nhất mà start này với tới được
         for cat, lo, hi in sorted(CATEGORIES, key=lambda c: -remaining[c[0]]):
             if remaining[cat] <= 0:
                 continue
@@ -191,7 +179,7 @@ def main():
         name = os.path.splitext(os.path.basename(p))[0]
         try:
             rel = os.path.relpath(p, HERE).replace("\\", "/")
-        except ValueError:  # Windows: bản đồ nằm ở ổ đĩa khác -> giữ đường dẫn tuyệt đối
+        except ValueError:  # khác ổ đĩa trên Windows
             rel = os.path.abspath(p).replace("\\", "/")
         try:
             cases, stats = generate_for_map(p, args.per_map, rng, args.margin, args.border,
@@ -210,8 +198,7 @@ def main():
         oim_s = "" if oim is None else f" | đo thật trong vùng free chính {oim:.0%}"
         print(f"[{name:<26}] {stats.get('schema','?'):<6} free {stats['free_ratio']:.0%}{oim_s} "
               f"| {len(cases)} case {cats}{miss}")
-        # Bản đồ jikay đã lấp ô trống bằng EDT nên tỷ lệ "đo thật" thấp là bình thường;
-        # chỉ cảnh báo với bản đồ KHÔNG lấp lỗ (group1/khác), nơi ô trống giữ Z mặc định.
+        # Bản đồ jikay đã lấp lỗ nên chỉ cảnh báo bản đồ không lấp
         if oim is not None and oim < 0.2 and stats.get("schema") != "jikay":
             print("    [CẢNH BÁO] Vùng free liên thông lớn nhất gần như toàn ô CHƯA QUAN SÁT "
                   "(Z mặc định). Planner đi qua đó là đi trên địa hình bịa -> nên sinh lại "
