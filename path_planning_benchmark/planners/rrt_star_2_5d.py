@@ -85,15 +85,22 @@ class RRTStar25D:
 
         return RRTStar25DNode(nx, ny, nyaw)
 
-    def _is_edge_valid(self, n1, n2, num_checks=5):
-        """Checks if straight edge between n1 and n2 is collision-free and feasible."""
+    def _is_edge_valid(self, n1, n2, pose_spacing=0.4):
+        """
+        Checks if straight edge between n1 and n2 is collision-free and feasible.
+        - Vật cản: kiểm tra dày theo nửa ô lưới (trước đây chỉ 5 điểm/cạnh nên cạnh dài
+          3.5 m bỏ sót vật cản mỏng).
+        - Roll/pitch: kiểm tra mỗi ~pose_spacing m, yaw nội suy theo cung ngắn nhất.
+        """
+        if not self.map.is_segment_free(n1.x, n1.y, n2.x, n2.y):
+            return False
+        length = np.hypot(n2.x - n1.x, n2.y - n1.y)
+        num_checks = max(int(np.ceil(length / pose_spacing)) + 1, 2)
+        dyaw = (n2.yaw - n1.yaw + np.pi) % (2 * np.pi) - np.pi
         for t in np.linspace(0, 1, num_checks):
             cx = (1 - t) * n1.x + t * n2.x
             cy = (1 - t) * n1.y + t * n2.y
-            cyaw = (1 - t) * n1.yaw + t * n2.yaw
-
-            if self.map.is_occupied_2d(cx, cy):
-                return False
+            cyaw = n1.yaw + t * dyaw
 
             s_cost = self._slope_cost(cx, cy, cyaw)
             if np.isinf(s_cost):
@@ -175,11 +182,14 @@ class RRTStar25D:
 
         if best_goal_node is not None:
             path = self._reconstruct_path(best_goal_node)
-            # Append exact goal state
-            gz = self.map.get_elevation(gx, gy)
-            roll_g, pitch_g, _ = self.map.project_footprint_3point(gx, gy, gyaw)
-            tau_g = self.map.compute_dynamic_traversability(gx, gy, gyaw)
-            path.append((gx, gy, gz, gyaw, roll_g, pitch_g, tau_g))
+            # Chỉ nối điểm goal chính xác khi đoạn cuối (có thể dài tới goal_tolerance) hợp lệ;
+            # trước đây nối thẳng không kiểm tra nên đường có thể cắt qua vật cản.
+            goal_node = RRTStar25DNode(gx, gy, gyaw)
+            if self._is_edge_valid(best_goal_node, goal_node):
+                gz = self.map.get_elevation(gx, gy)
+                roll_g, pitch_g, _ = self.map.project_footprint_3point(gx, gy, gyaw)
+                tau_g = self.map.compute_dynamic_traversability(gx, gy, gyaw)
+                path.append((gx, gy, gz, gyaw, roll_g, pitch_g, tau_g))
             return path, True
 
         # If goal not directly reached, find node closest to goal

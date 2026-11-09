@@ -170,8 +170,9 @@ class THybridAStar:
                     return direct_path, True
 
             for nx, ny, nyaw, steer, direction in self._get_motion_primitives(current):
-                # 1. Fast 2D Occupancy Check
-                if self.map.is_occupied_2d(nx, ny):
+                # 1. 2D Occupancy Check dọc cả bước di chuyển (không chỉ điểm cuối),
+                #    tránh nhảy qua vật cản mỏng hơn step_size
+                if not self.map.is_segment_free(current.x, current.y, nx, ny):
                     continue
 
                 # 2. SO(3) Pose Projection & Dynamic Traversability Check
@@ -204,19 +205,19 @@ class THybridAStar:
     def _try_direct_connection(self, current, gx, gy, gyaw, step_check=0.4):
         """Attempts a straight analytical step connection from current node to goal pose."""
         dist = np.hypot(gx - current.x, gy - current.y)
-        n_steps = int(np.ceil(dist / step_check))
-        target_yaw = np.arctan2(gy - current.y, gx - current.x)
+        n_steps = max(int(np.ceil(dist / step_check)), 1)
+        if not self.map.is_segment_free(current.x, current.y, gx, gy):
+            return None
 
-        path_nodes = []
+        # Nội suy yaw theo cung ngắn nhất (tránh quay vòng khi yaw đi qua ±pi)
+        dyaw = (gyaw - current.yaw + np.pi) % (2 * np.pi) - np.pi
+
         curr_node = current
         for i in range(1, n_steps + 1):
             t = i / n_steps
             cx = (1 - t) * current.x + t * gx
             cy = (1 - t) * current.y + t * gy
-            cyaw = (1 - t) * current.yaw + t * gyaw
-
-            if self.map.is_occupied_2d(cx, cy):
-                return None
+            cyaw = (current.yaw + t * dyaw + np.pi) % (2 * np.pi) - np.pi
 
             roll, pitch, _ = self.map.project_pose_so3(cx, cy, cyaw)
             if abs(roll) > self.theta_x_max or abs(pitch) > self.theta_y_max:

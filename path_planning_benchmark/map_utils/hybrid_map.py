@@ -164,11 +164,29 @@ class HybridMap:
         return None
 
     def get_elevation(self, x, y):
-        """Bilinear or nearest interpolation of elevation z at (x,y)."""
-        ix, iy = int(x / self.resolution), int(y / self.resolution)
-        if 0 <= ix < self.nx and 0 <= iy < self.ny:
-            return float(self.Z[iy, ix])
+        """Nearest-cell elevation z at (x,y), same cell convention as world_to_grid (round)."""
+        g = self.world_to_grid(x, y)
+        if g is not None:
+            return float(self.Z[g[1], g[0]])
         return 0.0
+
+    def is_segment_free(self, x1, y1, x2, y2, step=None):
+        """
+        True nếu đoạn thẳng (x1,y1)->(x2,y2) không đi qua ô vật cản / ra ngoài bản đồ.
+        Lấy mẫu dày theo bước `step` (mặc định 1/8 ô lưới) để không nhảy qua vật cản mỏng
+        hay cắt góc ô vật cản.
+        """
+        if step is None:
+            step = 0.125 * self.resolution
+        n = max(int(np.ceil(np.hypot(x2 - x1, y2 - y1) / step)), 1)
+        t = np.linspace(0.0, 1.0, n + 1)
+        xs = x1 + t * (x2 - x1)
+        ys = y1 + t * (y2 - y1)
+        ix = np.round(xs / self.resolution).astype(int)
+        iy = np.round(ys / self.resolution).astype(int)
+        if np.any((ix < 0) | (ix >= self.nx) | (iy < 0) | (iy >= self.ny)):
+            return False
+        return not bool(np.any(self.occupancy_2d[iy, ix]))
 
     def is_occupied_2d(self, x, y):
         """Checks if (x,y) is in the lethal 2D obstacle layer."""

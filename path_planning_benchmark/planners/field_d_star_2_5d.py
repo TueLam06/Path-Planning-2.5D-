@@ -25,6 +25,11 @@ class FieldDStar25D:
         # 3D Euclidean distance
         d3d = np.sqrt((x2 - x1)**2 + (y2 - y1)**2 + (z2 - z1)**2)
 
+        # Bước lưới 16 hướng (vd. (2,1)) đi qua các ô trung gian: phải kiểm tra cả đoạn,
+        # không chỉ ô giữa, nếu không đường sẽ cắt góc vật cản.
+        if not self.map.is_segment_free(x1, y1, x2, y2):
+            return float('inf')
+
         # Slope and traversability cost
         mid_x, mid_y = (x1 + x2) / 2.0, (y1 + y2) / 2.0
         g = self.map.world_to_grid(mid_x, mid_y)
@@ -119,7 +124,8 @@ class FieldDStar25D:
             if g_score:
                 closest_node = min(g_score.keys(), key=lambda node: np.hypot(node[0] - s_goal[0], node[1] - s_goal[1]))
                 target_grid = closest_node
-                found = True
+                # Trước đây đặt found = True ở đây -> báo thành công dù không tới đích.
+                found = False
             else:
                 return [], False
 
@@ -151,10 +157,11 @@ class FieldDStar25D:
             tau = self.map.compute_dynamic_traversability(wx, wy, yaw)
             path.append((wx, wy, wz, yaw, roll, pitch, tau))
 
-        # Append exact goal point
-        gz = self.map.get_elevation(gx, gy)
-        g_roll, g_pitch, _ = self.map.project_pose_so3(gx, gy, path[-1][3])
-        g_tau = self.map.compute_dynamic_traversability(gx, gy, path[-1][3])
-        path.append((gx, gy, gz, path[-1][3], g_roll, g_pitch, g_tau))
+        # Append exact goal point: chỉ khi đã tới gần đích và đoạn nối cuối không cắt vật cản
+        if found and self.map.is_segment_free(path[-1][0], path[-1][1], gx, gy):
+            gz = self.map.get_elevation(gx, gy)
+            g_roll, g_pitch, _ = self.map.project_pose_so3(gx, gy, path[-1][3])
+            g_tau = self.map.compute_dynamic_traversability(gx, gy, path[-1][3])
+            path.append((gx, gy, gz, path[-1][3], g_roll, g_pitch, g_tau))
 
         return path, found

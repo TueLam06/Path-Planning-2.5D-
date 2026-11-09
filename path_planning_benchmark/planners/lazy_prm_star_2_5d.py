@@ -63,7 +63,7 @@ class LazyPRMStar25D:
         iys = np.clip(np.round(pts_y / self.map.resolution).astype(int), 0, self.map.ny - 1)
 
         # 1. 2D Occupancy check along entire continuous segment
-        if np.any(self.map.occupancy_2d[iys, ixs]):
+        if np.any(self.map.occupancy_2d[iys, ixs]) or not self.map.is_segment_free(n1.x, n1.y, n2.x, n2.y):
             self.edge_cache[key] = (float('inf'), False)
             return float('inf'), False
 
@@ -72,6 +72,17 @@ class LazyPRMStar25D:
         if np.any(slopes > self.roll_max):
             self.edge_cache[key] = (float('inf'), False)
             return float('inf'), False
+
+        # 2b. Ràng buộc lật thật của xe: chiếu chân đế 3 điểm theo hướng cạnh và kiểm tra
+        #     roll/pitch (trước đây chỉ so độ dốc ô với roll_max -> đường vẫn lật > 31.5°).
+        yaw_seg = np.arctan2(n2.y - n1.y, n2.x - n1.x)
+        n_pose = max(int(np.ceil(dist_2d / 0.4)) + 1, 2)
+        for t in np.linspace(0.0, 1.0, n_pose):
+            roll, pitch, _ = self.map.project_footprint_3point(
+                n1.x + t * (n2.x - n1.x), n1.y + t * (n2.y - n1.y), yaw_seg)
+            if abs(roll) > self.roll_max or abs(pitch) > self.pitch_max:
+                self.edge_cache[key] = (float('inf'), False)
+                return float('inf'), False
 
         # 3. 3D distance and terrain cost integration
         z_start = self.map.get_elevation(n1.x, n1.y)
