@@ -1,17 +1,40 @@
 # HANDOFF: Cải thiện thuật toán 2.5D bằng các bộ dữ liệu mới
 
-> Bàn giao: 2026-11-09 · Repo: https://github.com/TueLam06/Path-Planning-2.5D- (nhánh `main`)
+> Bàn giao: 2026-11-09 (cập nhật khi chuyển máy) · Repo: https://github.com/TueLam06/Path-Planning-2.5D- (nhánh `main`)
 > Mục tiêu phiên tiếp theo: **chạy bộ auto-test trên các bộ dữ liệu mới → tìm điểm yếu → sửa thuật toán →
 > chạy lại để chứng minh cải thiện**, không làm hỏng những gì đang đúng.
 
 ---
 
 ## 0. Định nghĩa "xong"
-- [ ] Chạy được ít nhất **2 bộ dữ liệu mới** ngoài 8 frame RELLIS mẫu (ưu tiên: BenchNav → RELLIS đầy đủ).
+- [ ] Chạy được ít nhất **2 bộ dữ liệu mới** ngoài 8 frame RELLIS mẫu. BenchNav đã chạy thử nhưng quá dễ (§4.1); tiếp theo: bản đồ dốc tự sinh (§4.1b) → RELLIS đầy đủ (§4.2).
 - [ ] Bộ test **phân biệt được thuật toán**: ít nhất 1 planner có valid < 90% ở nhóm khó (hiện tại mọi planner đạt 100% trên jikay8 nên chưa xếp hạng được).
 - [ ] Mỗi thay đổi thuật toán có **số liệu trước/sau** trong `logs/testsuite/history.csv`.
 - [ ] `false_success = 0` ở mọi lần chạy (đây là test hồi quy bắt buộc).
 - [ ] RRT\* trung bình < 3 s/case (hiện khoảng 12 s).
+
+---
+
+## 0.5 Chuyển sang máy mới
+
+**Có trong git (clone là có):** toàn bộ code, 6 bản đồ group1 + 100 bản đồ BenchNav (`map_data/`), 1 bản đồ RELLIS mẫu (`rellis_25d_generator/samples/`), bộ 40 case `testsuite/testcases.json`, `CLAUDE.md`, `HANDOFF.md`.
+
+**KHÔNG có trong git (máy cũ, phải làm lại nếu cần):**
+| Thứ | Ở máy cũ | Trên máy mới |
+|---|---|---|
+| Môi trường Python | venv tạm | `pip install -r requirements.txt` (torch **không** còn bắt buộc) |
+| 8 frame RELLIS mẫu (24 MB) | `RELLIS 2.5D/3. code/rellis_25d_generator/raw_data/` | `python auto_pipeline.py ... --download-sample` tự tải |
+| Log các lần chạy (`logs/`) | `Path-Planning-2.5D/logs/`, `RELLIS 2.5D/4. logs/testsuite/` | Không cần mang theo; số liệu chính đã ghi ở §1.3 |
+| Lần chạy BenchNav dở (381/1.200 job) | `logs/testsuite/benchnav_base/` | Chạy lại từ đầu (lệnh ở §4.1) |
+| Báo cáo LaTeX, `roadmap.md`, PDF bài báo | thư mục `RELLIS 2.5D/` (repo Whitenessly) | Không thuộc repo này |
+
+Việc đầu tiên trên máy mới:
+```bash
+git clone https://github.com/TueLam06/Path-Planning-2.5D-.git && cd Path-Planning-2.5D-
+python -m venv .venv && .venv\Scripts\activate && pip install -r requirements.txt
+python auto_pipeline.py --name smoke --download-sample --seqs 00000 --stride 1 --per-map 3 --workers 4
+```
+Đạt nếu `logs/testsuite/smoke/REPORT.md` báo **0 lần báo success sai**.
 
 ---
 
@@ -44,6 +67,7 @@
 | 7 bản đồ cũ, code gốc | 40 | 22% / 5% / 48% / 38% | 0.20 / 1.6 / 0.10 / 0.21 | 95 lần báo success sai |
 | 7 bản đồ cũ, sau khi sửa | 40 | 75% / 55% / 100% / 45% | 0.25 / 2.2 / 0.81 / 0.58 | 0 lần báo sai |
 | 8 bản đồ jikay (RELLIS mẫu) | 72 | 100% / 100% / 100% / 100% | 0.34 / 12.0 / 2.38 / 1.55 | **Quá dễ**, 1 cảnh duy nhất |
+| BenchNav 100 bản đồ, chế độ geo (dừng ở 381/1.200 job, 5 worker) | 300 | 100% / 100% / 100% / 100% | 0.26 / 15.6 / 1.00 / 3.54 | Không có vật cản; max roll TB 14–17°, không vượt giới hạn; opt-ratio 0.96–1.01 |
 
 > Log chi tiết của 3 lần chạy này nằm ở máy cũ: `Documents/RELLIS 2.5D/4. logs/testsuite/{rellis_full_v1, rellis_full_v3_fixed, jikay8_v1}/`.
 
@@ -55,7 +79,7 @@ git clone https://github.com/TueLam06/Path-Planning-2.5D-.git
 cd Path-Planning-2.5D-
 python -m venv .venv && .venv\Scripts\activate          # Linux/macOS: source .venv/bin/activate
 pip install -r requirements.txt
-pip install torch --index-url https://download.pytorch.org/whl/cpu   # cần cho bản đồ BenchNav .pt
+# torch chỉ cần cho tools/photo_to_lidar.py; bản đồ BenchNav .pt đã đọc được bằng numpy
 ```
 Kiểm tra nhanh (khoảng 2 phút, tự tải 24 MB mẫu RELLIS):
 ```bash
@@ -94,17 +118,22 @@ python run_testsuite.py --cases ../logs/testsuite/<run>/testcases.json --planner
 
 ## 4. Bộ dữ liệu (theo thứ tự nên làm)
 
-### 4.1 BenchNav: đã có sẵn trong repo, làm ĐẦU TIÊN
-- `path_planning_benchmark/map_data/from_benchnav/*.pt`: 100 bản đồ độ cao tổng hợp (nguồn: https://github.com/masafumiendo/benchnav).
-- `MapLoader` đọc `tensors["heights"]`, **gán cứng độ phân giải 0.25 m** (`map_loader.py`, nhánh `.pt`), **không có lớp ngữ nghĩa** → chỉ chạy chế độ `geo`.
-- Giá trị: địa hình **dốc và gồ ghề** hơn RELLIS → kiểm tra được ràng buộc roll/pitch và khả năng tìm đường vòng, đúng chỗ jikay8 còn thiếu.
-- **Kiểm tra trước khi tin số liệu:** đơn vị của `heights` (m?), kích thước lưới, độ phân giải thật của BenchNav. Mở 1 file, in `Z.min()`, `Z.max()`, `Z.shape`; nếu sai thì sửa `resolution` trong `map_loader.py`.
+### 4.1 BenchNav: đã có trong repo, ĐÃ CHẠY THỬ
+- `path_planning_benchmark/map_data/from_benchnav/*.pt`: 100 bản đồ tổng hợp (nguồn: https://github.com/masafumiendo/benchnav), **4 nhóm** (`000`–`003`) × 25 bản đồ.
+- Mỗi file: lưới **64 × 64**, `heights` (chênh khoảng 1.4–1.65 m), `slopes` (độ, max khoảng 19–24°), `t_classes` (lớp địa hình), `colors`, và dự đoán độ trượt (`distributions`).
+- **Đã sửa** (`map_utils/map_loader.py`): đọc `.pt` bằng numpy (không cần torch); độ phân giải **0.5 m** theo `scripts/generate_terrain_dataset.py` của BenchNav (trước đó gán sai 0.25 m → dốc gấp đôi, sinh vật cản giả). Bản đồ = **32 × 32 m**, độ dốc tính lại khớp lớp `slopes` của file.
+- **Kết quả:** bản đồ **100% ô đi được** (dốc < ngưỡng 30°) → mọi planner đạt 100%. BenchNav **chưa giúp phân biệt planner** ở dạng hiện tại.
+- **Độ khó thật của BenchNav là độ trượt theo loại địa hình** (10 lớp `t_classes`, mỗi nhóm dùng 4 lớp: `000`: 3,4,5,7 · `001`: 3,4,8,9 · `002`: 0,2,5,8 · `003`: 4,7,8,9). Planner hiện không dùng thông tin này.
+- **Việc tiếp theo với BenchNav:** đọc `src/environments/terrain_properties.py` và slip model trong repo BenchNav → ánh xạ `t_classes` thành chi phí (hoặc cấm đi với lớp trượt cao) → đưa vào `HybridMap` như một lớp `costmap` (`MapLoader` cần trả `metadata["costmap"]`), rồi chạy chế độ `sem`.
 ```bash
 cd path_planning_benchmark
-python generate_testcases.py --maps "map_data/from_benchnav/*.pt" --per-map 6 --out ../logs/benchnav_cases.json
-python run_testsuite.py --cases ../logs/benchnav_cases.json --modes geo --workers 4 --name benchnav_base
+python generate_testcases.py --maps "map_data/from_benchnav/*.pt" --per-map 3 --out ../logs/benchnav/testcases_benchnav.json
+python run_testsuite.py --cases ../logs/benchnav/testcases_benchnav.json --modes geo --workers 4 --name benchnav_base
 ```
-> `generate_testcases.py` chỉ đặt start/goal trên ô đã quan sát khi bản đồ có `observed_mask`; bản đồ `.pt` không có lớp này nên mọi ô free đều hợp lệ.
+> 300 case × 4 planner ≈ 1.200 job; RRT\* khoảng 15 s/case nên mất khoảng 1 giờ với 5 worker. Tối ưu RRT\* (P1-b) trước nếu cần chạy nhiều lần.
+
+### 4.1b Bản đồ dốc tự sinh (không cần tải gì)
+- `path_planning_benchmark/map_utils/terrain_generator.py` có sẵn bộ sinh địa hình. Sinh bản đồ có dốc 25–35° và vật cản để thử ràng buộc roll/pitch và khe hẹp. Đây là cách nhanh nhất để có bộ test **khó** trước khi tải RELLIS đầy đủ.
 
 ### 4.2 RELLIS-3D đầy đủ (dữ liệu chính)
 - Nguồn: https://github.com/unmannedlab/RELLIS-3D (mục *LiDAR Download*):
