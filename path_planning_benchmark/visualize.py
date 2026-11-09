@@ -9,6 +9,14 @@ from map_utils.terrain_generator import TerrainGenerator
 from map_utils.hybrid_map import HybridMap
 from planners.thybrid_a_star import THybridAStar
 from planners.rrt_star_2_5d import RRTStar25D
+import sys
+
+# Console Windows mặc định cp1252 không in được tiếng Việt
+for _s in (sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
 DEFAULT_SAVE_PATH = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "logs", "comparison_plot.png")

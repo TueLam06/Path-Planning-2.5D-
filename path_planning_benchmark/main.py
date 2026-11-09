@@ -13,6 +13,13 @@ from run_field_d_star import main as run_field_d_star_main
 from run_lazy_prm_star import main as run_lazy_prm_star_main
 from run_benchmark import main as run_benchmark_main
 
+# Console Windows mặc định cp1252 không in được tiếng Việt
+for _s in (sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 def main():
     print("\n==========================================================================")
     print("      2.5D PATH PLANNING & BENCHNAV SUITE (NHÓM 2)                       ")

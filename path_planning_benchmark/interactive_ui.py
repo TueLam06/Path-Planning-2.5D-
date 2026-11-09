@@ -11,6 +11,13 @@ from run_field_d_star import run_field_d_star_standalone
 from run_lazy_prm_star import run_lazy_prm_star_standalone
 from run_benchmark import run_benchnav_map
 
+# Console Windows mặc định cp1252 không in được tiếng Việt
+for _s in (sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 def interactive_menu(map_selection=None, algo_selection=None):
     """
     Interactive Terminal UI for selecting 2.5D Path Planning Algorithms and Heightmap Datasets.

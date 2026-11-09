@@ -15,6 +15,14 @@ from planners.rrt_star_2_5d import RRTStar25D
 from planners.field_d_star_2_5d import FieldDStar25D
 from planners.lazy_prm_star_2_5d import LazyPRMStar25D
 from benchnav.metrics import PathEvaluator
+import sys
+
+# Console Windows mặc định cp1252 không in được tiếng Việt
+for _s in (sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
 DEFAULT_LOG_DIR = os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "logs")

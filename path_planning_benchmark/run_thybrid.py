@@ -11,6 +11,14 @@ from map_utils.hybrid_map import HybridMap
 from map_utils.point_picker import select_start_goal
 from planners.thybrid_a_star import THybridAStar
 from benchnav.metrics import PathEvaluator
+import sys
+
+# Console Windows mặc định cp1252 không in được tiếng Việt
+for _s in (sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
 def run_thybrid_standalone(map_name, start_pose=None, goal_pose=None):
     """Executes T-Hybrid A* on the given map name."""

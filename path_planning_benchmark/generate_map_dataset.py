@@ -2,6 +2,14 @@ import os
 import numpy as np
 from map_utils.terrain_generator import TerrainGenerator
 from map_utils.map_loader import MapLoader
+import sys
+
+# Console Windows mặc định cp1252 không in được tiếng Việt
+for _s in (sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
 def generate_default_map_dataset():
     """Generates and populates 3. code/map_data directory with 2.5D heightmaps."""

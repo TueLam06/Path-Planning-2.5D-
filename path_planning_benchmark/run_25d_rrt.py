@@ -11,6 +11,14 @@ from map_utils.hybrid_map import HybridMap
 from map_utils.point_picker import select_start_goal
 from planners.rrt_star_2_5d import RRTStar25D
 from benchnav.metrics import PathEvaluator
+import sys
+
+# Console Windows mặc định cp1252 không in được tiếng Việt
+for _s in (sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
 def run_25d_rrt_standalone(map_name, start_pose=None, goal_pose=None):
     """Executes 2.5D RRT* on the given map name."""
