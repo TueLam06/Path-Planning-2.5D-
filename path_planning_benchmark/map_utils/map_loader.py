@@ -1,7 +1,59 @@
 import os
 import glob
+import pickle
 import sys
+import zipfile
 import numpy as np
+
+# scripts/generate_terrain_dataset.py của BenchNav: grid_size=64, resolution=0.5 (m)
+BENCHNAV_RESOLUTION = 0.5
+
+_TORCH_STORAGE_DTYPES = {
+    "FloatStorage": np.float32, "DoubleStorage": np.float64, "HalfStorage": np.float16,
+    "LongStorage": np.int64, "IntStorage": np.int32, "ShortStorage": np.int16,
+    "CharStorage": np.int8, "ByteStorage": np.uint8, "BoolStorage": np.bool_,
+}
+
+
+class _TorchStub:
+    """Thay cho object torch không cần dùng (distributions, model...)."""
+
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def __setstate__(self, state):
+        pass
+
+
+def _load_torch_file_numpy(path):
+    """Đọc file torch.save (định dạng zip) thành dict/ndarray numpy."""
+    with zipfile.ZipFile(path) as zf:
+        pkl_name = next(n for n in zf.namelist() if n.endswith("data.pkl"))
+        prefix = pkl_name[: -len("data.pkl")]
+
+        def rebuild_tensor(storage, offset, size, stride, *args):
+            itemsize = storage.dtype.itemsize
+            return np.lib.stride_tricks.as_strided(
+                storage[offset:], shape=tuple(size), strides=tuple(s * itemsize for s in stride)
+            ).copy()
+
+        class _Unpickler(pickle.Unpickler):
+            def find_class(self, module, name):
+                if name in ("_rebuild_tensor", "_rebuild_tensor_v2"):
+                    return rebuild_tensor
+                if name in _TORCH_STORAGE_DTYPES:
+                    return name
+                if module.startswith("torch"):
+                    return _TorchStub
+                return super().find_class(module, name)
+
+            def persistent_load(self, pid):
+                _, storage_type, key, _location, _numel = pid
+                dtype = _TORCH_STORAGE_DTYPES.get(storage_type, np.float32)
+                return np.frombuffer(zf.read(f"{prefix}data/{key}"), dtype=dtype)
+
+        return _Unpickler(zf.open(pkl_name)).load()
+
 
 class MapLoader:
     """
@@ -167,20 +219,19 @@ class MapLoader:
             X, Y = np.meshgrid(x, y)
             return (X, Y, Z, resolution, metadata) if return_metadata else (X, Y, Z, resolution)
 
-        # Parse raw PyTorch .pt file
+        # Parse raw PyTorch .pt file (BenchNav, đọc bằng numpy, không cần torch)
         if filepath.endswith(".pt"):
-            import torch
-            data = torch.load(filepath, weights_only=False, map_location='cpu')
+            data = _load_torch_file_numpy(filepath)
             tensors = data.get("tensors", {}) if isinstance(data, dict) else {}
             if "heights" in tensors:
-                Z = tensors["heights"].cpu().numpy()
-            elif isinstance(data, torch.Tensor):
-                Z = data.cpu().numpy()
+                Z = np.array(tensors["heights"], dtype=np.float32)
+            elif isinstance(data, np.ndarray):
+                Z = np.array(data, dtype=np.float32)
             else:
                 raise ValueError(f"Unrecognized PyTorch format in map file: {filepath}")
 
             metadata["schema"] = "benchnav"
-            resolution = 0.25
+            resolution = BENCHNAV_RESOLUTION
             ny, nx = Z.shape
             x = np.linspace(0, nx * resolution, nx)
             y = np.linspace(0, ny * resolution, ny)
