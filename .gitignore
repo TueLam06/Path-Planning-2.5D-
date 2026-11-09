@@ -16,6 +16,7 @@ raw_photo/
 # Tài liệu, báo cáo (không đưa lên repo)
 *.md
 !HANDOFF.md
+!CLAUDE.md
 *.tex
 *.pdf
 docs/
