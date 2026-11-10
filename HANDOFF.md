@@ -11,7 +11,7 @@
 - [ ] Bộ test **phân biệt được thuật toán**: ít nhất 1 planner có valid < 90% ở nhóm khó (hiện tại mọi planner đạt 100% trên jikay8 nên chưa xếp hạng được).
 - [ ] Mỗi thay đổi thuật toán có **số liệu trước/sau** trong `logs/testsuite/history.csv`.
 - [ ] `false_success = 0` ở mọi lần chạy (đây là test hồi quy bắt buộc).
-- [ ] RRT\* trung bình < 3 s/case (hiện khoảng 13 s trên jikay).
+- [x] RRT\* trung bình < 3 s/case: 10.9 → 1.46 s trên jikay (GĐ 1).
 
 ---
 
@@ -47,8 +47,8 @@ Thứ tự: **chốt định nghĩa benchmark → dựng bộ test khó → sử
 | GĐ | Việc | Mục §5 | Trạng thái |
 |---|---|---|---|
 | 0 | venv, smoke, baseline 40 case `--workers 1` trên máy mới | | ✅ xong (số liệu ở §1.3) |
-| 1 | Tăng tốc RRT\* (KD-tree / lưới băm, cache cạnh), mục tiêu < 3 s/case | P1-b | ⏭ tiếp theo |
-| 2 | Chốt định nghĩa benchmark: dung sai goal chung, kích thước xe Warthog | P1-c, P2-g | |
+| 1 | Tăng tốc RRT\* (KD-tree / lưới băm, cache cạnh), mục tiêu < 3 s/case | P1-b | ✅ xong (§1.4) |
+| 2 | Chốt định nghĩa benchmark: dung sai goal chung, kích thước xe Warthog | P1-c, P2-g | ⏭ tiếp theo |
 | 3 | Bộ test khó: địa hình dốc tự sinh, tag độ khó, case âm; BenchNav `t_classes` → costmap | P1-a, §4.1, §4.1b | |
 | 4 | Sửa planner theo điểm yếu: Field D\* roll, T-Hybrid chân đế + lùi, làm mượt Z, LazyPRM\* | P2-d/e/f, P3 | |
 | song song | Tải RELLIS-3D đầy đủ (14 GB); chạy dev sau GĐ 1–2, test chỉ khi đã chốt | §4.2 | |
@@ -103,6 +103,20 @@ Lý do GĐ 2 đứng trước GĐ 3: đổi dung sai goal và kích thước xe 
 - Nhóm `long` trên 40 case: chỉ Field D\* đạt (100%), 3 planner còn lại 0%. Field D\* lại có max roll TB cao nhất (25–26°, vượt roll 22–25%) vì chưa kiểm tra roll (P2-e).
 - Opt. ratio < 1 (0.84–0.86) ở T-Hybrid/RRT\* nhiều khả năng do dừng sớm trong dung sai goal 2.5 m, còn đường tham chiếu đi tới đúng goal (Field D\* dung sai 1.2 m → 0.95; LazyPRM\* tới đúng goal → 1.02). Opt. ratio chưa so sánh công bằng được cho tới khi xong P2-g.
 - RRT\* trên jikay vẫn khoảng 13 s/case → GĐ 1.
+
+### 1.4 GĐ 1: tăng tốc RRT\* (xong)
+Profile 1 case jikay: **82% thời gian nằm trong `project_footprint_3point`** (khoảng 130.000 lần gọi/plan qua `_slope_cost`). Đã sửa, **giữ nguyên kết quả bit-exact**:
+- `HybridMap.project_footprint_3point_batch`: chiếu chân đế cho nhiều pose cùng lúc; dùng `matmul` để làm tròn giống hệt `np.dot` của bản scalar (đã so 45.000 pose ngẫu nhiên: 0 khác biệt).
+- `RRTStar25D`: `_is_edge_valid` dùng bản batch; cache slope cost theo node; bỏ tính lại slope bất biến trong vòng chọn parent; tìm nearest/near bằng mảng numpy.
+
+Đo trên máy cũ (Windows 10, Python 3.13, numpy 2.4, `--workers 1`; log ở `logs/gd1/` + `logs/testsuite/gd1_*`):
+
+| Bộ | Trước | Sau | Tăng tốc | Kết quả từng job |
+|---|---|---|---|---|
+| 40 case, RRT\* sem + geo (80 job) | 172.5 s (1.90 / 2.41 s/case) | 19.7 s (0.22 / 0.27 s/case) | **8.8×** | 80/80 giống hệt |
+| 24 case jikay, RRT\* sem | 10.9 s/case | **1.46 s/case** | 7.5× | 24/24 giống hệt |
+
+Hồi quy cả 4 planner (40 case + 24 case jikay, sem + geo): valid giữ nguyên 75/55/100/45% (sem) và 78/65/100/62% (geo) trên 40 case, 100% trên jikay; `false_success = 0`. Đo lại thời gian trên máy mới để cập nhật baseline của máy đó.
 
 ---
 
@@ -221,9 +235,9 @@ Xuất ra đúng cấu trúc mà `rellis_25d_generator` đọc được:
 - Sinh case có chủ đích cho từng tag (quota), thêm **case âm** (start/goal khác vùng liên thông → planner phải báo thất bại) và **case semantic-critical** (đường ngắn nhất theo `costmap_geom` đi qua bùn/vũng/bụi, nhưng vẫn có đường an toàn theo `costmap`).
 - Kiểm chứng: trên RELLIS dev, ít nhất 1 planner < 90% valid ở nhóm khó; bật/tắt ngữ nghĩa khác nhau rõ ở nhóm semantic-critical.
 
-**b. RRT\* chậm (khoảng 12 s/case)** · `planners/rrt_star_2_5d.py:68` (`_nearest_node` duyệt list O(n)), vòng tìm `near_nodes` trong `plan()` (`:105`) cũng O(n); `_is_edge_valid` (`:88`) gọi lại nhiều lần cho cùng cạnh.
-- Dùng mảng numpy cho toạ độ node + `scipy.spatial.cKDTree` (dựng lại định kỳ) hoặc lưới băm; cache kết quả kiểm tra cạnh; dừng sớm khi đã tới goal và cost hội tụ.
-- Kiểm chứng: cùng `testcases.json`, valid không giảm, thời gian TB < 3 s.
+**b. ~~RRT\* chậm~~: xong ở GĐ 1** (§1.4). Còn tồn tại, chưa sửa (thay đổi kết quả nên để riêng):
+- Rewire không cập nhật cost cho **các node con** của node vừa đổi parent → cost cây bị cũ, chọn đường chưa tối ưu.
+- Chưa dừng sớm khi cost tới goal đã hội tụ (luôn chạy đủ `max_iterations`).
 
 **c. Kích thước xe sai** · `map_utils/hybrid_map.py:34` (`robot_length=0.7, robot_width=0.5`), `rellis_25d_generator/config.py:122-126` (hộp lọc thân xe "Polaris + người lái" 3.6 × 2.6 m)
 - RELLIS-3D thu bằng **Clearpath Warthog không người lái** (khoảng 1.5 × 1.4 m, **cần tra thông số chính thức** của Clearpath). Chân đế nhỏ làm roll đo được nhiễu; hộp lọc quá to xoá mất mặt đất thật quanh xe.
