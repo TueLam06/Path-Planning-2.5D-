@@ -7,6 +7,7 @@ class RRTStar25DNode:
         self.yaw = yaw
         self.cost = cost
         self.parent = parent
+        self.slope = None  # cache _slope_cost của pose node (pose không đổi)
 
 class RRTStar25D:
     """
@@ -55,6 +56,11 @@ class RRTStar25D:
                     (abs(pitch) / self.N_norm) * self.w_pitch) * self.w_slope
         return cost_val
 
+    def _node_slope(self, node):
+        if node.slope is None:
+            node.slope = self._slope_cost(node.x, node.y, node.yaw)
+        return node.slope
+
     def _sample(self, goal_pose):
         """Samples random SE(2) state with goal biasing."""
         if np.random.rand() < self.goal_sample_rate:
@@ -64,12 +70,6 @@ class RRTStar25D:
             ry = np.random.uniform(0, self.map.height)
             ryaw = np.random.uniform(-np.pi, np.pi)
             return rx, ry, ryaw
-
-    def _nearest_node(self, nodes, rx, ry):
-        """Finds nearest node in tree based on (x,y) Euclidean distance."""
-        dists = [np.hypot(n.x - rx, n.y - ry) for n in nodes]
-        min_idx = int(np.argmin(dists))
-        return nodes[min_idx]
 
     def _steer(self, from_node, rx, ry, ryaw):
         """Steers from_node towards (rx, ry, ryaw) by step_size."""
@@ -92,15 +92,10 @@ class RRTStar25D:
         length = np.hypot(n2.x - n1.x, n2.y - n1.y)
         num_checks = max(int(np.ceil(length / pose_spacing)) + 1, 2)
         dyaw = (n2.yaw - n1.yaw + np.pi) % (2 * np.pi) - np.pi
-        for t in np.linspace(0, 1, num_checks):
-            cx = (1 - t) * n1.x + t * n2.x
-            cy = (1 - t) * n1.y + t * n2.y
-            cyaw = n1.yaw + t * dyaw
-
-            s_cost = self._slope_cost(cx, cy, cyaw)
-            if np.isinf(s_cost):
-                return False
-        return True
+        t = np.linspace(0, 1, num_checks)
+        roll, pitch = self.map.project_footprint_3point_batch(
+            (1 - t) * n1.x + t * n2.x, (1 - t) * n1.y + t * n2.y, n1.yaw + t * dyaw)
+        return not bool(np.any((np.abs(roll) > self.roll_max) | (np.abs(pitch) > self.pitch_max)))
 
     def plan(self, start_pose, goal_pose, goal_tolerance=2.5):
         """
@@ -119,28 +114,28 @@ class RRTStar25D:
 
 
         nodes = [start_node]
+        # Toạ độ node dạng mảng để tìm nearest/near bằng numpy
+        node_xs = np.empty(self.max_iterations + 1)
+        node_ys = np.empty(self.max_iterations + 1)
+        node_xs[0], node_ys[0] = sx, sy
 
         best_goal_node = None
         min_goal_cost = float('inf')
 
         for i in range(self.max_iterations):
             rx, ry, ryaw = self._sample(goal_pose)
-            nearest = self._nearest_node(nodes, rx, ry)
+            n = len(nodes)
+            nearest = nodes[int(np.argmin(np.hypot(node_xs[:n] - rx, node_ys[:n] - ry)))]
             new_node = self._steer(nearest, rx, ry, ryaw)
 
             if not self._is_edge_valid(nearest, new_node):
                 continue
 
-            # Compute edge distance and slope cost
             dist = np.hypot(new_node.x - nearest.x, new_node.y - nearest.y)
-            edge_slope_cost = self._slope_cost(new_node.x, new_node.y, new_node.yaw)
+            edge_slope_cost = self._node_slope(new_node)
 
-            # Find near neighbors within optimization circle
-            near_nodes = []
-            for n in nodes:
-                d = np.hypot(n.x - new_node.x, n.y - new_node.y)
-                if d <= self.search_radius:
-                    near_nodes.append(n)
+            near_mask = np.hypot(node_xs[:n] - new_node.x, node_ys[:n] - new_node.y) <= self.search_radius
+            near_nodes = [nodes[k] for k in np.flatnonzero(near_mask)]
 
             # Choose best parent
             min_cost = nearest.cost + dist + edge_slope_cost
@@ -148,20 +143,20 @@ class RRTStar25D:
 
             for near in near_nodes:
                 d_near = np.hypot(new_node.x - near.x, new_node.y - near.y)
-                c_slope = self._slope_cost(new_node.x, new_node.y, new_node.yaw)
-                if near.cost + d_near + c_slope < min_cost:
+                if near.cost + d_near + edge_slope_cost < min_cost:
                     if self._is_edge_valid(near, new_node):
-                        min_cost = near.cost + d_near + c_slope
+                        min_cost = near.cost + d_near + edge_slope_cost
                         best_parent = near
 
             new_node.cost = min_cost
             new_node.parent = best_parent
             nodes.append(new_node)
+            node_xs[n], node_ys[n] = new_node.x, new_node.y
 
             # Rewire near neighbors
             for near in near_nodes:
                 d_near = np.hypot(near.x - new_node.x, near.y - new_node.y)
-                c_slope_near = self._slope_cost(near.x, near.y, near.yaw)
+                c_slope_near = self._node_slope(near)
                 potential_cost = new_node.cost + d_near + c_slope_near
                 if potential_cost < near.cost:
                     if self._is_edge_valid(new_node, near):

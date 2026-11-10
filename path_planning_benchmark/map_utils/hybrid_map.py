@@ -271,6 +271,41 @@ class HybridMap:
 
         return float(roll), float(pitch), normal
 
+    def project_footprint_3point_batch(self, xs, ys, yaws):
+        """Bản vector hóa của project_footprint_3point cho nhiều pose. Trả về (roll, pitch) dạng mảng."""
+        xs = np.atleast_1d(np.asarray(xs, dtype=float))
+        ys = np.atleast_1d(np.asarray(ys, dtype=float))
+        yaws = np.atleast_1d(np.asarray(yaws, dtype=float))
+        half_l = self.robot_length / 2.0
+        half_w = self.robot_width / 2.0
+        pts_local = np.array([[-half_l, 0.0], [half_l, half_w], [half_l, -half_w]])
+
+        # Dùng matmul (N,1,2,2)@(1,3,2,1) để làm tròn giống hệt np.dot của bản scalar
+        c, s = np.cos(yaws), np.sin(yaws)
+        r_yaw = np.stack([np.stack([c, -s], -1), np.stack([s, c], -1)], 1)
+        pw = (r_yaw[:, None] @ pts_local[None, :, :, None])[..., 0]
+        px = pw[..., 0] + xs[:, None]
+        py = pw[..., 1] + ys[:, None]
+
+        ix = np.round(px / self.resolution).astype(int)
+        iy = np.round(py / self.resolution).astype(int)
+        inside = (ix >= 0) & (ix < self.nx) & (iy >= 0) & (iy < self.ny)
+        pz = np.zeros_like(px)
+        pz[inside] = self.Z[iy[inside], ix[inside]]
+
+        pts = np.stack([px, py, pz], axis=-1)
+        normal = np.cross(pts[:, 1] - pts[:, 0], pts[:, 2] - pts[:, 0])
+        norm_val = np.linalg.norm(normal, axis=1)
+        degenerate = norm_val < 1e-6
+        normal = normal / np.where(degenerate, 1.0, norm_val)[:, None]
+        normal[normal[:, 2] < 0] *= -1.0
+
+        pitch = np.arctan2(normal[:, 0], normal[:, 2])
+        roll = -np.arctan2(normal[:, 1], normal[:, 2])
+        roll[degenerate] = 0.0
+        pitch[degenerate] = 0.0
+        return roll, pitch
+
     def compute_dynamic_traversability(self, x, y, yaw,
                                        theta_x_max=0.35, theta_y_min=-0.45, theta_y_max=0.45,
                                        wr=0.3, w_rx=0.35, w_ry=0.35):
