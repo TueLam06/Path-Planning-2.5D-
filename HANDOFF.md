@@ -49,7 +49,7 @@ Thứ tự: **chốt định nghĩa benchmark → dựng bộ test khó → sử
 | 0 | venv, smoke, baseline 40 case `--workers 1` trên máy mới | | ✅ xong (số liệu ở §1.3) |
 | 1 | Tăng tốc RRT\* (KD-tree / lưới băm, cache cạnh), mục tiêu < 3 s/case | P1-b | ✅ xong (§1.4) |
 | 2 | Chốt định nghĩa benchmark: dung sai goal chung, kích thước xe Warthog | P1-c, P2-g | ✅ xong (§1.5) |
-| 3 | Bộ test khó: địa hình dốc tự sinh, tag độ khó, case âm; BenchNav `t_classes` → costmap | P1-a, §4.1, §4.1b | ⏭ tiếp theo |
+| 3 | Bộ test khó: địa hình dốc tự sinh, tag độ khó, case âm; BenchNav `t_classes` → costmap | P1-a, §4.1, §4.1b | 🔶 đang làm (§1.6): bản đồ tổng hợp + case âm xong |
 | 4 | Sửa planner theo điểm yếu: Field D\* roll, T-Hybrid chân đế + lùi, làm mượt Z, LazyPRM\* | P2-d/e/f, P3 | |
 | song song | Tải RELLIS-3D đầy đủ (14 GB); chạy dev sau GĐ 1–2, test chỉ khi đã chốt | §4.2 | |
 
@@ -143,6 +143,38 @@ Baseline mới (máy cũ, `--workers 1`, log `logs/testsuite/gd2_*`):
 
 Còn lệch, chưa sửa: cột "Vượt roll" (bộ kiểm chứng) vẫn 9–38% ở T-Hybrid/RRT\*/LazyPRM\* vì planner kiểm tra pose khác bộ đo (yaw nội suy giữa 2 node, khoảng cách mẫu 0.4 m, cache cạnh vô hướng của LazyPRM\* với chân đế không đối xứng). Field D\* = 0% vì kiểm tra đúng pose như bộ đo (ô + hướng bước). Cần thống nhất "pose = waypoint + hướng tới waypoint kế".
 
+### 1.6 GĐ 3 (phần 1): bộ test tổng hợp có kiểm soát độ khó + case âm
+- `generate_synthetic_suite.py`: sinh **53 bản đồ** 40 × 30 m (ô 0.2 m) + **110 case** thiết kế sẵn (12 case âm), seed cố định. Bản đồ ở `map_data/synthetic/` (**không commit**, chạy lại script để sinh); case ở `testsuite/testcases_synthetic.json`.
+
+| Họ | Tham số | Thử điểm yếu gì |
+|---|---|---|
+| `gap` | khe 1.0–3.2 m | chân đế qua khe hẹp |
+| `slope_band` | dốc ngang 10 / 28 / 33° | dễ (33° = case âm) |
+| `saddle` | sống núi > 45°, đèo rộng 2–6 m, sườn 20–27° | tìm lối qua địa hình dốc |
+| `corridor_s` | hành lang chữ S rộng 1.2–2.8 m (bán kính cua nhỏ nhất khoảng 1.3 m) | rẽ liên tục sát tường |
+| `maze` | ô 4–6 m | đường vòng dài |
+| `boulders` / `boulders_dense` | 15–50 / 80–160 tảng | né vật cản thưa / dày |
+| `blocked` | tường kín | case âm |
+
+- **Case âm** (`feasible: false`): không có đường kể cả coi xe là 1 điểm, hoặc lối đi (khe/hành lang/đèo) hẹp hơn bề rộng xe 1.38 m. Planner đúng khi **báo thất bại**.
+- `run_testsuite.py`: thêm cột **"Từ chối đúng"** (case âm), valid chỉ tính trên case có đường; `auto_pipeline.py` xếp "case khó nhất" theo `correct`.
+- Kết quả (`logs/testsuite/gd3_synth2`, geo, 4 worker nên thời gian chỉ tham khảo):
+
+| Planner | Valid | Từ chối đúng | gap | corridor_s | maze | boulders_dense | saddle | Thời gian TB (s) |
+|---|---|---|---|---|---|---|---|---|
+| T-Hybrid A\* | 88% | 100% | 100% | **0%** | 67% | 89% | 100% | 1.1 |
+| RRT\* | 68% | 100% | 69% | 17% | **0%** | 50% | 100% | 1.2 |
+| Field D\* | 98% | 100% | 100% | 67% | 100% | 100% | 100% | **9.4** |
+| LazyPRM\* | 90% | 100% | 69% | 17% | 100% | 100% | 100% | 3.0 |
+
+- **Phân biệt được planner** (tiêu chí GĐ 3 đạt), `false_success = 0`:
+  - `corridor_s`: rộng 1.6 m cả 4 đều hỏng (có thể bất khả thi thật với chân đế 1.52 × 1.38 m khi cua gắt); 2.0 m chỉ Field D\* qua; 2.8 m Field D\* 100%, RRT\*/LazyPRM\* 50%, **T-Hybrid 0%**.
+  - `maze`: RRT\* 0%; T-Hybrid chỉ qua ô 6 m.
+  - `boulders_dense` 160 tảng: RRT\* 0%, T-Hybrid 67%.
+- **T-Hybrid A\* hỏng ở hành lang chữ S vì động học**: mô hình xe đạp dùng `robot_length` làm chiều dài cơ sở. Từ GĐ 2 giá trị này là 1.52 m → bán kính quay tối thiểu = 1.52 / tan(0.55) ≈ **2.5 m** (trước GĐ 2 là khoảng 1.1 m), lớn hơn bán kính cua của hành lang. Nhưng Warthog lái **skid-steer** (quay tại chỗ được), nên mô hình Ackermann không đúng với xe thật → P2-f.
+- Còn dễ: `saddle`, `slope_band`, `boulders` đều 100%. Dốc trơn không bao giờ chạm giới hạn lật 31.5° vì `rho_max` (29.8°) chặn ô trước.
+- **Field D\* chậm** (7–13 s/case trên bản đồ 40 × 30 m): bảng ổn định 16 hướng + `is_segment_free` mỗi cạnh + tối đa 60.000 vòng khi không có đường → P3-h.
+
 ---
 
 ## 2. Cài đặt
@@ -208,10 +240,17 @@ python run_testsuite.py --cases ../logs/benchnav/testcases_benchnav.json --modes
 - `path_planning_benchmark/map_utils/terrain_generator.py` có sẵn bộ sinh địa hình. Sinh bản đồ có dốc 25–35° và vật cản để thử ràng buộc roll/pitch và khe hẹp. Đây là cách nhanh nhất để có bộ test **khó** trước khi tải RELLIS đầy đủ.
 
 ### 4.2 RELLIS-3D đầy đủ (dữ liệu chính)
-- Nguồn: https://github.com/unmannedlab/RELLIS-3D (mục *LiDAR Download*):
-  - *Ouster LiDAR SemanticKITTI Format* (14 GB) → `Rellis_3D_os1_cloud_node_kitti_bin.zip`
-  - *Ouster LiDAR Annotation SemanticKITTI Format* (174 MB) → `Rellis_3D_os1_cloud_node_semantickitti_label_id_20210614.zip`
-  - (tuỳ chọn) *Ouster LiDAR Scan Poses files* → cho phương án ghép nhiều frame
+- Nguồn: https://github.com/unmannedlab/RELLIS-3D (mục *LiDAR Download*). Link Google Drive:
+  - *Ouster LiDAR SemanticKITTI Format* (14 GB): https://drive.google.com/file/d/1lDSVRf_kZrD0zHHMsKJ0V1GN9QATR4wH/view?usp=sharing
+  - *Ouster LiDAR Annotation SemanticKITTI Format* (174 MB): https://drive.google.com/file/d/12bsblHXtob60KrjV7lGXUQTdC5PhV8Er/view?usp=sharing
+  - *Ouster LiDAR Scan Poses files*: https://drive.google.com/file/d/1V3PT_NJhA41N7TBLp5AbW31d0ztQDQOX/view?usp=sharing (cho `--min-move`)
+  - *Ouster LiDAR Split File* (75 KB): https://drive.google.com/file/d/1raQJPySyqDaHpc53KPnJVl3Bln6HlcVS/view?usp=sharing
+  - Velodyne 32 kênh (tuỳ chọn): `.bin` 5.58 GB https://drive.google.com/file/d/1PiQgPQtJJZIpXumuHSig5Y6kxhAzz1cz/view?usp=sharing · nhãn 143.6 MB https://drive.google.com/file/d/1n-9FkpiH4QUP7n0PnQBp-s7nzbSzmxp8/view?usp=sharing
+  - Baidu (dự phòng): https://pan.baidu.com/s/1akqSm7mpIMyUJhn_qwg3-w?pwd=4gk3 (mã `4gk3`)
+- **Lọc cảnh trùng** (`auto_pipeline.py`, đã thử trên 8 frame mẫu: 8 → 1 bản đồ):
+  - `--min-move 10 --min-turn 30`: chọn frame theo pose, chỉ giữ khi xe đã đi ≥ 10 m hoặc quay ≥ 30° (cần `poses.txt`, đặt trong `raw_data/` hoặc `--poses-dir`). Bỏ được đoạn xe đứng yên, tốt hơn `--stride`.
+  - `--dedup`: bỏ bản đồ có lưới độ cao khối 2 m gần giống (RMSE < `--dedup-z` 0.15 m) một trong 20 bản đồ giữ gần nhất. Mặc định **không so nhãn** (`--dedup-sem 0`) vì nhãn lấp lỗ EDT không ổn định giữa các frame cùng cảnh.
+  - Gợi ý: `python auto_pipeline.py --name rellis_dev --seqs 00000 00001 00002 --min-move 10 --dedup --workers 6`.
 - Đặt **nguyên file .zip** vào `rellis_25d_generator/raw_data/` (hoặc ổ khác + `--data-dir`). **Không giải nén** (`data_loader` đọc thẳng zip; giải nén sẽ cần thêm 14 GB).
 - Google Drive có thể giới hạn lượt tải → thử lại sau 24 giờ hoặc dùng link Baidu trong README RELLIS.
 - 5 sequence: 00000 (2.847 scan) · 00001 (2.319) · 00002 (4.147) · 00003 (2.184) · 00004 (2.059). LiDAR 10 Hz → các frame liền nhau gần như trùng; dùng `--stride 50` (5 s) ≈ 270 bản đồ.
@@ -277,8 +316,10 @@ Xuất ra đúng cấu trúc mà `rellis_25d_generator` đọc được:
 **e. Field D\*: ~~không kiểm tra roll~~ (xong ở GĐ 2); tên chưa đúng bản chất** · `planners/field_d_star_2_5d.py`
 - Đây thực chất là A\* trên lưới 16 hướng (không nội suy chi phí qua cạnh ô, không replanning). Hoặc hiện thực nội suy Field D\* thật, hoặc đổi tên trong báo cáo.
 
-**f. T-Hybrid A\* chỉ đi tiến** · `planners/thybrid_a_star.py` (`directions = [1]`). Kiểm tra roll bằng chân đế đã xong ở GĐ 2.
+**f. T-Hybrid A\*: động học không khớp xe thật, chỉ đi tiến** · `planners/thybrid_a_star.py` (`_get_motion_primitives`: `L = self.map.robot_length`; `directions = [1]`). Kiểm tra roll bằng chân đế đã xong ở GĐ 2.
+- Bán kính quay tối thiểu hiện khoảng 2.5 m (L = 1.52 m, `max_steer` 0.55 rad) → hỏng 100% ở `corridor_s`. Warthog là skid-steer: thêm primitive **quay tại chỗ** (hoặc tách chiều dài cơ sở khỏi `robot_length`).
 - Thử primitive lùi (direction = −1, đã có hệ số phạt 1.2).
+- Kiểm chứng: `corridor_s` 2.0–2.8 m qua được, không giảm ở các họ khác.
 
 **g. ~~Dung sai goal khác nhau giữa planner~~: xong ở GĐ 2** (`GOAL_TOL = 1.0 m`). LazyPRM\* vẫn đi tới đúng goal (goal là node roadmap) nên chặt hơn 3 planner còn lại; chấp nhận được.
 
