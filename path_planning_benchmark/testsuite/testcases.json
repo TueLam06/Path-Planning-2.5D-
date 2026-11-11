@@ -1,11 +1,12 @@
 {
   "version": 1,
-  "created": "2026-11-09 21:48:13",
+  "created": "2026-11-10 19:44:08",
   "generator": {
     "maps": [
       "map_data\\*.npz",
       "..\\rellis_25d_generator\\samples\\*.npz"
     ],
+    "maps_list": null,
     "per_map": 9,
     "margin": 0.6,
     "border": 1.0,
@@ -175,6 +176,7 @@
       ],
       "euclid_m": 7.655,
       "ref_len_3d_m": 8.158,
+      "ref_len_3d_anyangle_m": 7.913,
       "detour_ratio": 1.066
     },
     {
@@ -194,6 +196,7 @@
       ],
       "euclid_m": 7.443,
       "ref_len_3d_m": 8.002,
+      "ref_len_3d_anyangle_m": 7.698,
       "detour_ratio": 1.075
     },
     {
@@ -213,6 +216,7 @@
       ],
       "euclid_m": 7.489,
       "ref_len_3d_m": 8.075,
+      "ref_len_3d_anyangle_m": 7.777,
       "detour_ratio": 1.078
     },
     {
@@ -232,6 +236,7 @@
       ],
       "euclid_m": 9.693,
       "ref_len_3d_m": 14.363,
+      "ref_len_3d_anyangle_m": 14.05,
       "detour_ratio": 1.482
     },
     {
@@ -251,6 +256,7 @@
       ],
       "euclid_m": 10.925,
       "ref_len_3d_m": 16.184,
+      "ref_len_3d_anyangle_m": 15.887,
       "detour_ratio": 1.481
     },
     {
@@ -270,6 +276,7 @@
       ],
       "euclid_m": 9.879,
       "ref_len_3d_m": 13.845,
+      "ref_len_3d_anyangle_m": 13.588,
       "detour_ratio": 1.401
     },
     {
@@ -289,6 +296,7 @@
       ],
       "euclid_m": 10.296,
       "ref_len_3d_m": 15.875,
+      "ref_len_3d_anyangle_m": 15.714,
       "detour_ratio": 1.542
     },
     {
@@ -308,6 +316,7 @@
       ],
       "euclid_m": 9.306,
       "ref_len_3d_m": 13.231,
+      "ref_len_3d_anyangle_m": 13.007,
       "detour_ratio": 1.422
     },
     {
@@ -327,6 +336,7 @@
       ],
       "euclid_m": 11.016,
       "ref_len_3d_m": 17.626,
+      "ref_len_3d_anyangle_m": 17.112,
       "detour_ratio": 1.6
     },
     {
@@ -346,6 +356,7 @@
       ],
       "euclid_m": 8.045,
       "ref_len_3d_m": 8.988,
+      "ref_len_3d_anyangle_m": 8.591,
       "detour_ratio": 1.117
     },
     {
@@ -365,6 +376,7 @@
       ],
       "euclid_m": 10.465,
       "ref_len_3d_m": 15.501,
+      "ref_len_3d_anyangle_m": 15.276,
       "detour_ratio": 1.481
     },
     {
@@ -384,6 +396,7 @@
       ],
       "euclid_m": 10.964,
       "ref_len_3d_m": 18.327,
+      "ref_len_3d_anyangle_m": 17.929,
       "detour_ratio": 1.672
     },
     {
@@ -403,6 +416,7 @@
       ],
       "euclid_m": 9.044,
       "ref_len_3d_m": 11.587,
+      "ref_len_3d_anyangle_m": 11.633,
       "detour_ratio": 1.281
     },
     {
@@ -422,6 +436,7 @@
       ],
       "euclid_m": 7.841,
       "ref_len_3d_m": 8.55,
+      "ref_len_3d_anyangle_m": 8.376,
       "detour_ratio": 1.09
     },
     {
@@ -441,6 +456,7 @@
       ],
       "euclid_m": 10.824,
       "ref_len_3d_m": 15.052,
+      "ref_len_3d_anyangle_m": 14.744,
       "detour_ratio": 1.391
     },
     {
@@ -460,6 +476,7 @@
       ],
       "euclid_m": 8.497,
       "ref_len_3d_m": 25.589,
+      "ref_len_3d_anyangle_m": 25.018,
       "detour_ratio": 3.012
     },
     {
@@ -479,6 +496,7 @@
       ],
       "euclid_m": 8.092,
       "ref_len_3d_m": 8.492,
+      "ref_len_3d_anyangle_m": 8.228,
       "detour_ratio": 1.049
     },
     {
@@ -498,6 +516,7 @@
       ],
       "euclid_m": 8.964,
       "ref_len_3d_m": 11.164,
+      "ref_len_3d_anyangle_m": 11.023,
       "detour_ratio": 1.245
     },
     {
@@ -517,6 +536,7 @@
       ],
       "euclid_m": 10.379,
       "ref_len_3d_m": 15.181,
+      "ref_len_3d_anyangle_m": 14.873,
       "detour_ratio": 1.463
     },
     {
@@ -536,6 +556,7 @@
       ],
       "euclid_m": 11.18,
       "ref_len_3d_m": 15.534,
+      "ref_len_3d_anyangle_m": 15.093,
       "detour_ratio": 1.389
     },
     {
@@ -555,6 +576,7 @@
       ],
       "euclid_m": 10.05,
       "ref_len_3d_m": 13.236,
+      "ref_len_3d_anyangle_m": 12.814,
       "detour_ratio": 1.317
     },
     {
@@ -574,6 +596,7 @@
       ],
       "euclid_m": 11.323,
       "ref_len_3d_m": 17.472,
+      "ref_len_3d_anyangle_m": 17.026,
       "detour_ratio": 1.543
     },
     {
@@ -593,6 +616,7 @@
       ],
       "euclid_m": 10.09,
       "ref_len_3d_m": 13.601,
+      "ref_len_3d_anyangle_m": 13.243,
       "detour_ratio": 1.348
     },
     {
@@ -612,6 +636,7 @@
       ],
       "euclid_m": 10.107,
       "ref_len_3d_m": 11.726,
+      "ref_len_3d_anyangle_m": 11.57,
       "detour_ratio": 1.16
     },
     {
@@ -631,6 +656,7 @@
       ],
       "euclid_m": 10.841,
       "ref_len_3d_m": 16.598,
+      "ref_len_3d_anyangle_m": 16.372,
       "detour_ratio": 1.531
     },
     {
@@ -650,6 +676,7 @@
       ],
       "euclid_m": 10.89,
       "ref_len_3d_m": 15.497,
+      "ref_len_3d_anyangle_m": 15.078,
       "detour_ratio": 1.423
     },
     {
@@ -669,6 +696,7 @@
       ],
       "euclid_m": 10.096,
       "ref_len_3d_m": 13.845,
+      "ref_len_3d_anyangle_m": 13.372,
       "detour_ratio": 1.371
     },
     {
@@ -688,6 +716,7 @@
       ],
       "euclid_m": 10.555,
       "ref_len_3d_m": 17.246,
+      "ref_len_3d_anyangle_m": 16.965,
       "detour_ratio": 1.634
     },
     {
@@ -707,6 +736,7 @@
       ],
       "euclid_m": 8.045,
       "ref_len_3d_m": 10.369,
+      "ref_len_3d_anyangle_m": 10.201,
       "detour_ratio": 1.289
     },
     {
@@ -726,6 +756,7 @@
       ],
       "euclid_m": 10.841,
       "ref_len_3d_m": 17.847,
+      "ref_len_3d_anyangle_m": 17.393,
       "detour_ratio": 1.646
     },
     {
@@ -745,6 +776,7 @@
       ],
       "euclid_m": 10.05,
       "ref_len_3d_m": 13.792,
+      "ref_len_3d_anyangle_m": 13.491,
       "detour_ratio": 1.372
     },
     {
@@ -764,6 +796,7 @@
       ],
       "euclid_m": 10.296,
       "ref_len_3d_m": 15.358,
+      "ref_len_3d_anyangle_m": 14.868,
       "detour_ratio": 1.492
     },
     {
@@ -783,6 +816,7 @@
       ],
       "euclid_m": 9.44,
       "ref_len_3d_m": 11.492,
+      "ref_len_3d_anyangle_m": 10.998,
       "detour_ratio": 1.217
     },
     {
@@ -802,6 +836,7 @@
       ],
       "euclid_m": 11.461,
       "ref_len_3d_m": 19.029,
+      "ref_len_3d_anyangle_m": 18.615,
       "detour_ratio": 1.66
     },
     {
@@ -821,6 +856,7 @@
       ],
       "euclid_m": 7.655,
       "ref_len_3d_m": 8.292,
+      "ref_len_3d_anyangle_m": 7.737,
       "detour_ratio": 1.083
     },
     {
@@ -840,6 +876,7 @@
       ],
       "euclid_m": 15.556,
       "ref_len_3d_m": 16.563,
+      "ref_len_3d_anyangle_m": 16.007,
       "detour_ratio": 1.065
     },
     {
@@ -859,6 +896,7 @@
       ],
       "euclid_m": 13.613,
       "ref_len_3d_m": 14.663,
+      "ref_len_3d_anyangle_m": 14.707,
       "detour_ratio": 1.077
     },
     {
@@ -878,6 +916,7 @@
       ],
       "euclid_m": 14.043,
       "ref_len_3d_m": 15.273,
+      "ref_len_3d_anyangle_m": 14.641,
       "detour_ratio": 1.088
     },
     {
@@ -897,6 +936,7 @@
       ],
       "euclid_m": 11.739,
       "ref_len_3d_m": 12.421,
+      "ref_len_3d_anyangle_m": 12.022,
       "detour_ratio": 1.058
     },
     {
@@ -916,6 +956,7 @@
       ],
       "euclid_m": 17.102,
       "ref_len_3d_m": 18.191,
+      "ref_len_3d_anyangle_m": 17.541,
       "detour_ratio": 1.064
     }
   ]
