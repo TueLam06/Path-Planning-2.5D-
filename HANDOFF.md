@@ -48,8 +48,8 @@ Thứ tự: **chốt định nghĩa benchmark → dựng bộ test khó → sử
 |---|---|---|---|
 | 0 | venv, smoke, baseline 40 case `--workers 1` trên máy mới | | ✅ xong (số liệu ở §1.3) |
 | 1 | Tăng tốc RRT\* (KD-tree / lưới băm, cache cạnh), mục tiêu < 3 s/case | P1-b | ✅ xong (§1.4) |
-| 2 | Chốt định nghĩa benchmark: dung sai goal chung, kích thước xe Warthog | P1-c, P2-g | ⏭ tiếp theo |
-| 3 | Bộ test khó: địa hình dốc tự sinh, tag độ khó, case âm; BenchNav `t_classes` → costmap | P1-a, §4.1, §4.1b | |
+| 2 | Chốt định nghĩa benchmark: dung sai goal chung, kích thước xe Warthog | P1-c, P2-g | ✅ xong (§1.5) |
+| 3 | Bộ test khó: địa hình dốc tự sinh, tag độ khó, case âm; BenchNav `t_classes` → costmap | P1-a, §4.1, §4.1b | ⏭ tiếp theo |
 | 4 | Sửa planner theo điểm yếu: Field D\* roll, T-Hybrid chân đế + lùi, làm mượt Z, LazyPRM\* | P2-d/e/f, P3 | |
 | song song | Tải RELLIS-3D đầy đủ (14 GB); chạy dev sau GĐ 1–2, test chỉ khi đã chốt | §4.2 | |
 
@@ -117,6 +117,31 @@ Profile 1 case jikay: **82% thời gian nằm trong `project_footprint_3point`**
 | 24 case jikay, RRT\* sem | 10.9 s/case | **1.46 s/case** | 7.5× | 24/24 giống hệt |
 
 Hồi quy cả 4 planner (40 case + 24 case jikay, sem + geo): valid giữ nguyên 75/55/100/45% (sem) và 78/65/100/62% (geo) trên 40 case, 100% trên jikay; `false_success = 0`. Đo lại thời gian trên máy mới để cập nhật baseline của máy đó.
+
+### 1.5 GĐ 2: chuẩn hoá benchmark (xong) → **baseline mới**
+Mọi số liệu trước GĐ 2 **không còn so sánh được** với số liệu sau GĐ 2 (bài toán đã đổi).
+
+| Chuẩn | Giá trị | Ở đâu |
+|---|---|---|
+| Kích thước xe | **Clearpath Warthog 1.52 × 1.38 m** (thông số Clearpath; không có số bề rộng vệt bánh nên dùng kích thước ngoài) | `HybridMap.ROBOT_LENGTH/ROBOT_WIDTH` |
+| Giới hạn lật | roll = pitch = **0.55 rad**, chân đế 3 điểm, **cả 4 planner** | `HybridMap.ROLL_MAX/PITCH_MAX`, `poses_stable()` |
+| Dung sai goal | **1.0 m**, chung cho planner và bộ kiểm chứng; planner so `<= tol − 1e-6` để không vượt do làm tròn | `benchnav/testsuite.py: GOAL_TOL`, `--goal-tol` |
+| Đường tham chiếu | Dijkstra lưới 8 hướng → **kéo căng any-angle** → độ dài 3D theo địa hình | `shortcut_path`, `polyline_len_3d`; trường `ref_len_3d_anyangle_m` |
+
+Thay đổi planner: T-Hybrid A\* kiểm tra chân đế (thay pháp tuyến 1 ô, pitch 0.60 → 0.55) và cố nối tới đúng goal; Field D\* có bảng ổn định 16 hướng tính trước, đo khoảng cách tới đúng goal; RRT\*/LazyPRM\* lấy giới hạn từ `HybridMap`.
+
+Baseline mới (máy cũ, `--workers 1`, log `logs/testsuite/gd2_*`):
+
+| Bộ | Mode | Valid: T-Hybrid / RRT\* / Field D\* / LazyPRM\* | Thời gian TB (s) | Opt. ratio (any-angle) | False success |
+|---|---|---|---|---|---|
+| 40 case | sem | 28% / 28% / 62% / 25% | 0.18 / 0.32 / 0.79 / 0.43 | 1.02–1.07 | 0 |
+| 40 case | geo | 48% / 32% / 98% / 32% | 0.22 / 0.35 / 0.88 / 0.38 | 1.03–1.08 | 0 |
+| 24 case jikay | sem | 100% / 100% / 100% / 100% | 0.29 / 1.78 / 3.28 / 1.18 | 1.00–1.02 | 0 |
+| 24 case jikay | geo | 100% / 100% / 100% / 100% | 0.21 / 1.80 / 2.55 / 1.01 | 1.01–1.03 | 0 |
+
+**Vì sao valid trên 40 case giảm mạnh** (ablation `logs/gd2/ablation.py`): do **kích thước xe** (giảm 20–40 điểm), dung sai goal chỉ 0–10 điểm. Khoảng 98–99.8% tư thế vượt lật có góc chân đế rơi vào **ô chưa đo** (Z = 0 trên bản đồ group1) → vách giả. Chân đế Warthog chạm vào vách giả nhiều gấp đôi (6.7% → 14.7% cặp ô–hướng). ⇒ **Bộ 40 case (34/40 case trên group1) không hợp làm bộ hồi quy nữa**; GĐ 3 cần bộ hồi quy mới trên bản đồ jikay / tự sinh.
+
+Còn lệch, chưa sửa: cột "Vượt roll" (bộ kiểm chứng) vẫn 9–38% ở T-Hybrid/RRT\*/LazyPRM\* vì planner kiểm tra pose khác bộ đo (yaw nội suy giữa 2 node, khoảng cách mẫu 0.4 m, cache cạnh vô hướng của LazyPRM\* với chân đế không đối xứng). Field D\* = 0% vì kiểm tra đúng pose như bộ đo (ô + hướng bước). Cần thống nhất "pose = waypoint + hướng tới waypoint kế".
 
 ---
 
@@ -239,9 +264,9 @@ Xuất ra đúng cấu trúc mà `rellis_25d_generator` đọc được:
 - Rewire không cập nhật cost cho **các node con** của node vừa đổi parent → cost cây bị cũ, chọn đường chưa tối ưu.
 - Chưa dừng sớm khi cost tới goal đã hội tụ (luôn chạy đủ `max_iterations`).
 
-**c. Kích thước xe sai** · `map_utils/hybrid_map.py:34` (`robot_length=0.7, robot_width=0.5`), `rellis_25d_generator/config.py:122-126` (hộp lọc thân xe "Polaris + người lái" 3.6 × 2.6 m)
-- RELLIS-3D thu bằng **Clearpath Warthog không người lái** (khoảng 1.5 × 1.4 m, **cần tra thông số chính thức** của Clearpath). Chân đế nhỏ làm roll đo được nhiễu; hộp lọc quá to xoá mất mặt đất thật quanh xe.
-- Kiểm chứng: % vượt roll giảm; bản đồ quanh gốc không còn lỗ do lọc nhầm (xem dashboard).
+**c. ~~Kích thước xe sai~~: phía planner xong ở GĐ 2** (Warthog 1.52 × 1.38 m). Còn lại:
+- Hộp lọc thân xe trong `rellis_25d_generator/config.py:122-126` vẫn theo "Polaris + người lái" 3.6 × 2.6 m. Đổi cần biết vị trí gắn LiDAR trên Warthog, và phải sinh lại bản đồ.
+- Va chạm vẫn coi xe là **một điểm** (`is_segment_free` dọc tâm xe). Nếu muốn tính cả thân xe: phình `occupancy_2d` thêm nửa bề rộng xe (khoảng 0.69 m). Thay đổi này làm nhiều case hiện tại thành bất khả thi → quyết định riêng.
 
 ### P2
 **d. Độ dốc tính trên Z chưa làm mượt** · `map_utils/hybrid_map.py:79-106` (`_compute_map_layers`: `slope > rho_max`, `roughness > h_max=0.15` → vật cản)
@@ -249,15 +274,13 @@ Xuất ra đúng cấu trúc mà `rellis_25d_generator` đọc được:
 - Gợi ý: dùng lớp `slope` đã làm mượt trong `.npz` nếu có, hoặc làm mượt Gaussian giống generator; tính roughness chỉ trên ô `observed_mask`.
 - Kiểm chứng: % ô vật cản giảm, valid tăng, `false_success` vẫn bằng 0.
 
-**e. Field D\* không kiểm tra roll; tên chưa đúng bản chất** · `planners/field_d_star_2_5d.py:18` (`_cost`)
-- Thêm kiểm tra roll/pitch bằng `project_footprint_3point` theo hướng bước di chuyển.
+**e. Field D\*: ~~không kiểm tra roll~~ (xong ở GĐ 2); tên chưa đúng bản chất** · `planners/field_d_star_2_5d.py`
 - Đây thực chất là A\* trên lưới 16 hướng (không nội suy chi phí qua cạnh ô, không replanning). Hoặc hiện thực nội suy Field D\* thật, hoặc đổi tên trong báo cáo.
 
-**f. T-Hybrid A\* chỉ dùng pháp tuyến 1 ô và chỉ đi tiến** · `planners/thybrid_a_star.py:102` (`directions = [1]`), kiểm tra roll trong `plan()` (`:121`) dùng `project_pose_so3`
-- Thử primitive lùi (direction = −1, đã có hệ số phạt 1.2); kiểm tra roll bằng chân đế cho nhất quán với bộ đo.
+**f. T-Hybrid A\* chỉ đi tiến** · `planners/thybrid_a_star.py` (`directions = [1]`). Kiểm tra roll bằng chân đế đã xong ở GĐ 2.
+- Thử primitive lùi (direction = −1, đã có hệ số phạt 1.2).
 
-**g. Dung sai goal khác nhau giữa planner** · T-Hybrid 2.5 m, RRT\* 2.5 m, Field D\* 1.2 m (dừng khi ≤ 1.2 m), LazyPRM\* coi goal là 1 node của roadmap (phải tới đúng goal)
-- Đưa thành tham số chung truyền từ `benchnav/testsuite.py:41` (`build_planner`), bằng `--goal-tol` của runner.
+**g. ~~Dung sai goal khác nhau giữa planner~~: xong ở GĐ 2** (`GOAL_TOL = 1.0 m`). LazyPRM\* vẫn đi tới đúng goal (goal là node roadmap) nên chặt hơn 3 planner còn lại; chấp nhận được.
 
 ### P3
 **h. `is_segment_free` tốn thời gian** · `map_utils/hybrid_map.py:173` (lấy mẫu mỗi 2.5 cm). Field D\* chậm từ 0.13 lên 0.8 s sau khi thêm kiểm tra này.
