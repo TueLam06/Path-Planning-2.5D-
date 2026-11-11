@@ -17,7 +17,8 @@ PLANNER_NAMES = ["T-Hybrid A*", "2.5D RRT*", "2.5D Field D*", "2.5D LazyPRM*"]
 LETHAL_IDS = (4, 5, 6, 8, 9, 12, 15, 17, 18, 27)
 SOFT_IDS = (19, 31, 33, 34)
 CLEAR_RADIUS = 1.2   # bán kính lớn nhất mà các planner tự dọn quanh start/goal
-ROLL_LIMIT_DEG = float(np.degrees(0.55))
+ROLL_LIMIT_DEG = float(np.degrees(HybridMap.ROLL_MAX))
+GOAL_TOL = 1.0       # m, dung sai goal chung cho mọi planner và bộ kiểm chứng
 
 
 def load_map_data(path):
@@ -84,6 +85,34 @@ def build_grid_graph(Z, free, res):
         (np.concatenate(wts), (np.concatenate(rows), np.concatenate(cols))), shape=(n, n)
     ).tocsr()
     return G, node_of_cell, cell_of_node
+
+
+def shortcut_path(hm, pts):
+    """Kéo căng (string-pulling) polyline lưới: nối thẳng tới điểm xa nhất còn nhìn thấy."""
+    out = [pts[0]]
+    i, n = 0, len(pts)
+    while i < n - 1:
+        j = i + 1
+        while j + 1 < n and hm.is_segment_free(pts[i][0], pts[i][1], pts[j + 1][0], pts[j + 1][1]):
+            j += 1
+        out.append(pts[j])
+        i = j
+    return np.asarray(out, dtype=float)
+
+
+def polyline_len_3d(hm, pts, step=None):
+    """Độ dài 3D của polyline, độ cao lấy mẫu dọc từng đoạn (mặc định mỗi nửa ô)."""
+    step = step or 0.5 * hm.resolution
+    total = 0.0
+    for (x1, y1), (x2, y2) in zip(pts[:-1], pts[1:]):
+        k = max(int(np.ceil(np.hypot(x2 - x1, y2 - y1) / step)), 1)
+        t = np.linspace(0.0, 1.0, k + 1)
+        xs, ys = x1 + t * (x2 - x1), y1 + t * (y2 - y1)
+        ix = np.clip(np.round(xs / hm.resolution).astype(int), 0, hm.nx - 1)
+        iy = np.clip(np.round(ys / hm.resolution).astype(int), 0, hm.ny - 1)
+        zs = hm.Z[iy, ix].astype(float)
+        total += float(np.sum(np.sqrt(np.diff(xs) ** 2 + np.diff(ys) ** 2 + np.diff(zs) ** 2)))
+    return total
 
 
 def reconstruct(pred, src, dst):

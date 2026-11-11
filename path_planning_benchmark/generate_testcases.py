@@ -20,7 +20,9 @@ from scipy.sparse.csgraph import dijkstra
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from benchnav.testsuite import build_grid_graph, build_hmap, load_map_data, reconstruct  # noqa: E402
+from benchnav.testsuite import (  # noqa: E402
+    build_grid_graph, build_hmap, load_map_data, polyline_len_3d, reconstruct, shortcut_path,
+)
 
 for _s in (sys.stdout, sys.stderr):
     try:
@@ -126,6 +128,7 @@ def generate_for_map(map_path, n_cases, rng, margin, border, min_euclid, max_tri
                          round(heading(point_along(path_xy, False, 2.0), gxy), 4)],
                 "euclid_m": round(euclid, 3),
                 "ref_len_3d_m": round(ref_len, 3),
+                "ref_len_3d_anyangle_m": round(polyline_len_3d(hm, shortcut_path(hm, path_xy)), 3),
                 "detour_ratio": round(ref_len / max(euclid, 1e-6), 3),
             })
             remaining[cat] -= 1
@@ -214,7 +217,8 @@ def main():
             "categories": {c: [lo, hi if np.isfinite(hi) else None] for c, lo, hi in CATEGORIES},
             "maps": maps_info,
             "cases": [{k: c[k] for k in ("id", "map", "map_path", "category", "start", "goal",
-                                         "euclid_m", "ref_len_3d_m", "detour_ratio")}
+                                         "euclid_m", "ref_len_3d_m", "ref_len_3d_anyangle_m",
+                                         "detour_ratio")}
                       for c in all_cases],
         }, f, ensure_ascii=False, indent=2)
     print(f"\n[OK] {len(all_cases)} test case / {len(maps_info)} bản đồ -> {os.path.relpath(out, HERE)}"

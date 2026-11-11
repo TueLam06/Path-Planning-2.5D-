@@ -31,7 +31,13 @@ class HybridMap:
     optional RELLIS-3D semantic/costmap layers, a 2D occupancy grid for impassable areas,
     and orientation projection methods.
     """
-    def __init__(self, X, Y, Z, resolution=0.2, robot_length=0.7, robot_width=0.5,
+    # Clearpath Warthog (xe thu RELLIS-3D): 1.52 x 1.38 x 0.83 m theo thông số Clearpath
+    ROBOT_LENGTH = 1.52
+    ROBOT_WIDTH = 1.38
+    ROLL_MAX = 0.55   # rad, giới hạn lật chung cho mọi planner và bộ kiểm chứng
+    PITCH_MAX = 0.55
+
+    def __init__(self, X, Y, Z, resolution=0.2, robot_length=ROBOT_LENGTH, robot_width=ROBOT_WIDTH,
                  rho_max=0.52, h_max=0.15, wr=0.5, w_rho=0.5,
                  semantic=None, costmap=None, observed_mask=None,
                  use_semantic=True, obstacle_cost_thresh=240, w_sem=0.5):
@@ -58,6 +64,8 @@ class HybridMap:
 
         self.robot_length = robot_length
         self.robot_width = robot_width
+        self.roll_max = self.ROLL_MAX
+        self.pitch_max = self.PITCH_MAX
         self.rho_max = rho_max
         self.h_max = h_max
 
@@ -305,6 +313,11 @@ class HybridMap:
         roll[degenerate] = 0.0
         pitch[degenerate] = 0.0
         return roll, pitch
+
+    def poses_stable(self, xs, ys, yaws):
+        """Mảng bool: pose nào có |roll| <= roll_max và |pitch| <= pitch_max (chân đế 3 điểm)."""
+        roll, pitch = self.project_footprint_3point_batch(xs, ys, yaws)
+        return (np.abs(roll) <= self.roll_max) & (np.abs(pitch) <= self.pitch_max)
 
     def compute_dynamic_traversability(self, x, y, yaw,
                                        theta_x_max=0.35, theta_y_min=-0.45, theta_y_max=0.45,

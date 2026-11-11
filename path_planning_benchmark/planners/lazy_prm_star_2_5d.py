@@ -17,14 +17,14 @@ class LazyPRMStar25D:
     Constructs a roadmap on the 2.5D manifold with fast lazy edge validation and footprint slope costing.
     """
     def __init__(self, hybrid_map, num_samples=2000, k_neighbors=18,
-                 connection_radius=7.0, roll_max=0.55, pitch_max=0.55,
+                 connection_radius=7.0, roll_max=None, pitch_max=None,
                  w_roll=1.2, w_pitch=1.0, w_slope=2.0):
         self.map = hybrid_map
         self.num_samples = num_samples
         self.k_neighbors = k_neighbors
         self.connection_radius = connection_radius
-        self.roll_max = roll_max
-        self.pitch_max = pitch_max
+        self.roll_max = hybrid_map.roll_max if roll_max is None else roll_max
+        self.pitch_max = hybrid_map.pitch_max if pitch_max is None else pitch_max
         self.w_roll = w_roll
         self.w_pitch = w_pitch
         self.w_slope = w_slope
@@ -76,12 +76,12 @@ class LazyPRMStar25D:
         # 2b. Footprint roll/pitch along the edge
         yaw_seg = np.arctan2(n2.y - n1.y, n2.x - n1.x)
         n_pose = max(int(np.ceil(dist_2d / 0.4)) + 1, 2)
-        for t in np.linspace(0.0, 1.0, n_pose):
-            roll, pitch, _ = self.map.project_footprint_3point(
-                n1.x + t * (n2.x - n1.x), n1.y + t * (n2.y - n1.y), yaw_seg)
-            if abs(roll) > self.roll_max or abs(pitch) > self.pitch_max:
-                self.edge_cache[key] = (float('inf'), False)
-                return float('inf'), False
+        t = np.linspace(0.0, 1.0, n_pose)
+        roll, pitch = self.map.project_footprint_3point_batch(
+            n1.x + t * (n2.x - n1.x), n1.y + t * (n2.y - n1.y), np.full(n_pose, yaw_seg))
+        if np.any((np.abs(roll) > self.roll_max) | (np.abs(pitch) > self.pitch_max)):
+            self.edge_cache[key] = (float('inf'), False)
+            return float('inf'), False
 
         # 3. 3D distance and terrain cost integration
         z_start = self.map.get_elevation(n1.x, n1.y)
@@ -94,10 +94,8 @@ class LazyPRMStar25D:
         self.edge_cache[key] = (cost, True)
         return cost, True
 
-    def plan(self, start_pose, goal_pose):
-        """
-        Executes 2.5D LazyPRM* on 2.5D elevation manifold.
-        """
+    def plan(self, start_pose, goal_pose, goal_tolerance=None):
+        """LazyPRM* trên bản đồ 2.5D. Goal là 1 node của roadmap nên luôn tới đúng goal (goal_tolerance không dùng)."""
         sx, sy, syaw = start_pose
         gx, gy, gyaw = goal_pose
 

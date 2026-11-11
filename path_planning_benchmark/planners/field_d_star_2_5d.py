@@ -46,7 +46,17 @@ class FieldDStar25D:
 
         return d3d * (1.0 + self.w_slope * (slope_val / self.map.rho_max) + self.w_tau * (1.0 - tau_val))
 
-    def plan(self, start_pose, goal_pose):
+    def _stability_table(self, offsets):
+        """stable[k, iy, ix]: chân đế tại ô (ix, iy) quay theo hướng offsets[k] không vượt giới hạn lật."""
+        ny, nx = self.map.ny, self.map.nx
+        xs, ys = np.meshgrid(np.arange(nx) * self.res, np.arange(ny) * self.res)
+        xs, ys = xs.ravel(), ys.ravel()
+        return np.stack([
+            self.map.poses_stable(xs, ys, np.full(xs.size, np.arctan2(dy, dx))).reshape(ny, nx)
+            for dx, dy in offsets
+        ])
+
+    def plan(self, start_pose, goal_pose, goal_tolerance=1.2):
         """
         Executes 2.5D Field D* from start_pose to goal_pose.
         :return: path [(x, y, z, yaw, roll, pitch, tau), ...], success (bool)
@@ -77,6 +87,7 @@ class FieldDStar25D:
             (2, 1), (2, -1), (-2, 1), (-2, -1),
             (1, 2), (1, -2), (-1, 2), (-1, -2)
         ]
+        stable = self._stability_table(nbr_offsets)
 
         found = False
         target_grid = s_start
@@ -89,17 +100,20 @@ class FieldDStar25D:
             if g_curr > g_score.get(u, float('inf')):
                 continue
 
-            dist_to_goal = np.hypot((s_goal[0] - u[0]) * self.res, (s_goal[1] - u[1]) * self.res)
-            if dist_to_goal <= 1.2 or u == s_goal:
+            # Đo tới đúng goal (không phải ô chứa goal); trừ 1e-6 để không vượt dung sai do làm tròn
+            dist_to_goal = np.hypot(u[0] * self.res - gx, u[1] * self.res - gy)
+            if dist_to_goal <= goal_tolerance - 1e-6:
                 found = True
                 target_grid = u
                 break
 
             ux, uy = u
-            for dx, dy in nbr_offsets:
+            for k, (dx, dy) in enumerate(nbr_offsets):
                 vx, vy = ux + dx, uy + dy
                 if 0 <= vx < self.map.nx and 0 <= vy < self.map.ny:
                     if self.map.occupancy_2d[vy, vx]:
+                        continue
+                    if not (stable[k, uy, ux] and stable[k, vy, vx]):
                         continue
 
                     v = (vx, vy)
@@ -155,8 +169,12 @@ class FieldDStar25D:
             tau = self.map.compute_dynamic_traversability(wx, wy, yaw)
             path.append((wx, wy, wz, yaw, roll, pitch, tau))
 
-        # Append exact goal only if reached and the last segment is free
-        if found and self.map.is_segment_free(path[-1][0], path[-1][1], gx, gy):
+        # Append exact goal only if reached and the last segment is free and stable
+        lx, ly = path[-1][0], path[-1][1]
+        t = np.linspace(0.0, 1.0, max(int(np.ceil(np.hypot(gx - lx, gy - ly) / 0.4)) + 1, 2))
+        seg_yaw = np.full(t.size, np.arctan2(gy - ly, gx - lx))
+        if (found and self.map.is_segment_free(lx, ly, gx, gy)
+                and np.all(self.map.poses_stable(lx + t * (gx - lx), ly + t * (gy - ly), seg_yaw))):
             gz = self.map.get_elevation(gx, gy)
             g_roll, g_pitch, _ = self.map.project_pose_so3(gx, gy, path[-1][3])
             g_tau = self.map.compute_dynamic_traversability(gx, gy, path[-1][3])

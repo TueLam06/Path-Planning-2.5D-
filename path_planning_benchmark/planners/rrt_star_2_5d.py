@@ -16,7 +16,7 @@ class RRTStar25D:
     """
     def __init__(self, hybrid_map, step_size=0.8, max_iterations=3000,
                  search_radius=3.5, goal_sample_rate=0.20,
-                 roll_max=0.55, pitch_max=0.55,
+                 roll_max=None, pitch_max=None,
                  w_roll=1.0, w_pitch=0.8, w_slope=2.0, N_norm=100.0):
 
         """
@@ -35,8 +35,8 @@ class RRTStar25D:
         self.goal_sample_rate = goal_sample_rate
 
 
-        self.roll_max = roll_max
-        self.pitch_max = pitch_max
+        self.roll_max = hybrid_map.roll_max if roll_max is None else roll_max
+        self.pitch_max = hybrid_map.pitch_max if pitch_max is None else pitch_max
         self.w_roll = w_roll
         self.w_pitch = w_pitch
         self.w_slope = w_slope
@@ -165,7 +165,7 @@ class RRTStar25D:
 
             # Check goal reachability
             dist_to_goal = np.hypot(gx - new_node.x, gy - new_node.y)
-            if dist_to_goal <= goal_tolerance:
+            if dist_to_goal <= goal_tolerance - 1e-6:
                 if new_node.cost < min_goal_cost:
                     min_goal_cost = new_node.cost
                     best_goal_node = new_node
@@ -184,7 +184,7 @@ class RRTStar25D:
         # If goal not directly reached, find node closest to goal
         dists = [np.hypot(gx - n.x, gy - n.y) for n in nodes]
         closest_node = nodes[int(np.argmin(dists))]
-        success = min(dists) <= goal_tolerance
+        success = min(dists) <= goal_tolerance - 1e-6
         return self._reconstruct_path(closest_node), success
 
 

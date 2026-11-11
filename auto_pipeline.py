@@ -262,7 +262,7 @@ def main():
     ap.add_argument("--planners", nargs="+", default=None)
     ap.add_argument("--runs", type=int, default=1)
     ap.add_argument("--workers", type=int, default=1, help="Song song (nhanh) / 1 = thời gian đo chính xác")
-    ap.add_argument("--goal-tol", type=float, default=2.5)
+    ap.add_argument("--goal-tol", type=float, default=1.0, help="Dung sai goal chung (m)")
     ap.add_argument("--skip", nargs="*", default=[], choices=["maps", "cases", "run"],
                     help="Bỏ qua bước (vd. đã có bản đồ)")
     ap.add_argument("--regen-cases", action="store_true", help="Sinh lại test case dù đã có")

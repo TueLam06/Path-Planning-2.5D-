@@ -23,7 +23,7 @@ class THybridAStar:
     """
     def __init__(self, hybrid_map, step_size=0.8, max_steer=0.55,
                  xy_resolution=0.6, yaw_resolution=np.radians(30.0),
-                 kt=0.5, k_tau=1.5, theta_x_max=0.55, theta_y_max=0.60,
+                 kt=0.5, k_tau=1.5, theta_x_max=None, theta_y_max=None,
                  max_iterations=8000):
         """
         :param hybrid_map: Instance of HybridMap
@@ -43,8 +43,8 @@ class THybridAStar:
 
         self.kt = kt
         self.k_tau = k_tau
-        self.theta_x_max = theta_x_max
-        self.theta_y_max = theta_y_max
+        self.theta_x_max = hybrid_map.roll_max if theta_x_max is None else theta_x_max
+        self.theta_y_max = hybrid_map.pitch_max if theta_y_max is None else theta_y_max
         self.max_iterations = max_iterations
 
     def _state_key(self, x, y, yaw):
@@ -159,9 +159,10 @@ class THybridAStar:
                 min_dist_to_goal = dist_to_goal
                 best_node = current
 
-            # Check goal reachability condition
-            if dist_to_goal <= goal_tolerance:
-                return self._reconstruct_path(current), True
+            # Tới vùng goal: nối thẳng tới đúng goal nếu được, không thì dừng tại node hiện tại
+            if dist_to_goal <= goal_tolerance - 1e-6:
+                direct_path = self._try_direct_connection(current, gx, gy, gyaw)
+                return (direct_path if direct_path is not None else self._reconstruct_path(current)), True
 
             # Analytical shortcut check when near goal
             if dist_to_goal < 15.0 and iterations % 3 == 0:
@@ -169,14 +170,16 @@ class THybridAStar:
                 if direct_path is not None:
                     return direct_path, True
 
-            for nx, ny, nyaw, steer, direction in self._get_motion_primitives(current):
+            children = self._get_motion_primitives(current)
+            stable = self.map.poses_stable([c[0] for c in children], [c[1] for c in children],
+                                           [c[2] for c in children])
+            for (nx, ny, nyaw, steer, direction), ok in zip(children, stable):
                 # 1. Collision check along the whole step
                 if not self.map.is_segment_free(current.x, current.y, nx, ny):
                     continue
 
-                # 2. SO(3) Pose Projection & Dynamic Traversability Check
-                roll, pitch, _ = self.map.project_pose_so3(nx, ny, nyaw)
-                if abs(roll) > self.theta_x_max or abs(pitch) > self.theta_y_max:
+                # 2. Chân đế 3 điểm không vượt giới hạn lật
+                if not ok:
                     continue
 
                 tau_tilde = self.map.compute_dynamic_traversability(nx, ny, nyaw, theta_x_max=self.theta_x_max)
@@ -209,18 +212,15 @@ class THybridAStar:
             return None
 
         dyaw = (gyaw - current.yaw + np.pi) % (2 * np.pi) - np.pi
+        ts = np.arange(1, n_steps + 1) / n_steps
+        cxs = (1 - ts) * current.x + ts * gx
+        cys = (1 - ts) * current.y + ts * gy
+        cyaws = (current.yaw + ts * dyaw + np.pi) % (2 * np.pi) - np.pi
+        if not np.all(self.map.poses_stable(cxs, cys, cyaws)):
+            return None
 
         curr_node = current
-        for i in range(1, n_steps + 1):
-            t = i / n_steps
-            cx = (1 - t) * current.x + t * gx
-            cy = (1 - t) * current.y + t * gy
-            cyaw = (current.yaw + t * dyaw + np.pi) % (2 * np.pi) - np.pi
-
-            roll, pitch, _ = self.map.project_pose_so3(cx, cy, cyaw)
-            if abs(roll) > self.theta_x_max or abs(pitch) > self.theta_y_max:
-                return None
-
+        for cx, cy, cyaw in zip(cxs, cys, cyaws):
             tau = self.map.compute_dynamic_traversability(cx, cy, cyaw, theta_x_max=self.theta_x_max)
             if tau <= 0.02:
                 return None

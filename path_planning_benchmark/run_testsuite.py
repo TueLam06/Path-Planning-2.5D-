@@ -23,7 +23,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from benchnav.metrics import PathEvaluator  # noqa: E402
 from benchnav.testsuite import (  # noqa: E402
-    PLANNER_NAMES, ROLL_LIMIT_DEG, build_hmap, build_planner, load_map_data, verify_path,
+    GOAL_TOL, PLANNER_NAMES, ROLL_LIMIT_DEG, build_hmap, build_planner, load_map_data, verify_path,
 )
 
 for _s in (sys.stdout, sys.stderr):
@@ -55,7 +55,7 @@ def run_job(job):
     err = None
     t0 = time.perf_counter()
     try:
-        path, success = planner.plan(start, goal)
+        path, success = planner.plan(start, goal, goal_tolerance=goal_tol)
     except Exception as exc:
         path, success, err = [], False, f"{type(exc).__name__}: {exc}"
     t_plan = time.perf_counter() - t0
@@ -64,7 +64,7 @@ def run_job(job):
     v = verify_path(path, start, goal, data, use_sem, goal_tol)
     collision_free = v["collision_samples"] == 0
     valid = bool(success) and v["reached"] and collision_free
-    ref = case["ref_len_3d_m"]
+    ref = case.get("ref_len_3d_anyangle_m") or case["ref_len_3d_m"]
     rec = {
         "case_id": case["id"], "map": case["map"], "category": case["category"],
         "planner": planner_name, "mode": mode, "run": run_idx, "seed": seed,
@@ -197,7 +197,8 @@ def main():
     ap.add_argument("--categories", nargs="+", default=None, help="Chỉ chạy nhóm short/medium/long")
     ap.add_argument("--runs", type=int, default=1, help="Số lần chạy mỗi case (seed khác nhau)")
     ap.add_argument("--seed", type=int, default=42)
-    ap.add_argument("--goal-tol", type=float, default=2.5, help="Sai số tới đích chấp nhận (m)")
+    ap.add_argument("--goal-tol", type=float, default=GOAL_TOL,
+                    help="Dung sai goal (m), dùng chung cho planner và bộ kiểm chứng")
     ap.add_argument("--workers", type=int, default=1,
                     help="Số tiến trình song song. >1 nhanh hơn nhưng thời gian đo bị nhiễu do tranh CPU")
     ap.add_argument("--name", default=None, help="Tên thư mục kết quả (mặc định theo thời gian)")
