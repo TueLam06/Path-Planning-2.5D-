@@ -25,3 +25,6 @@ docs/
 .DS_Store
 Thumbs.db
 *:Zone.Identifier
+
+# Bản đồ tổng hợp (sinh lại bằng generate_synthetic_suite.py)
+path_planning_benchmark/map_data/synthetic/

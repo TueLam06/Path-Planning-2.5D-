@@ -1,0 +1,3010 @@
+{
+  "version": 1,
+  "generator": "generate_synthetic_suite.py",
+  "seed": 7,
+  "categories": {
+    "gap": null,
+    "slope_band": null,
+    "saddle": null,
+    "corridor_s": null,
+    "maze": null,
+    "boulders": null,
+    "boulders_dense": null,
+    "blocked": null
+  },
+  "maps": [
+    {
+      "map": "syn_gap_1p0_s0",
+      "map_path": "map_data/synthetic/syn_gap_1p0_s0.npz",
+      "family": "gap",
+      "param": 1.0,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_gap_1p0_s1",
+      "map_path": "map_data/synthetic/syn_gap_1p0_s1.npz",
+      "family": "gap",
+      "param": 1.0,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_gap_1p4_s0",
+      "map_path": "map_data/synthetic/syn_gap_1p4_s0.npz",
+      "family": "gap",
+      "param": 1.4,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_gap_1p4_s1",
+      "map_path": "map_data/synthetic/syn_gap_1p4_s1.npz",
+      "family": "gap",
+      "param": 1.4,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_gap_1p8_s0",
+      "map_path": "map_data/synthetic/syn_gap_1p8_s0.npz",
+      "family": "gap",
+      "param": 1.8,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_gap_1p8_s1",
+      "map_path": "map_data/synthetic/syn_gap_1p8_s1.npz",
+      "family": "gap",
+      "param": 1.8,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_gap_2p4_s0",
+      "map_path": "map_data/synthetic/syn_gap_2p4_s0.npz",
+      "family": "gap",
+      "param": 2.4,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_gap_2p4_s1",
+      "map_path": "map_data/synthetic/syn_gap_2p4_s1.npz",
+      "family": "gap",
+      "param": 2.4,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_gap_3p2_s0",
+      "map_path": "map_data/synthetic/syn_gap_3p2_s0.npz",
+      "family": "gap",
+      "param": 3.2,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_gap_3p2_s1",
+      "map_path": "map_data/synthetic/syn_gap_3p2_s1.npz",
+      "family": "gap",
+      "param": 3.2,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_slope_band_10_s0",
+      "map_path": "map_data/synthetic/syn_slope_band_10_s0.npz",
+      "family": "slope_band",
+      "param": 10,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_slope_band_10_s1",
+      "map_path": "map_data/synthetic/syn_slope_band_10_s1.npz",
+      "family": "slope_band",
+      "param": 10,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_slope_band_28_s0",
+      "map_path": "map_data/synthetic/syn_slope_band_28_s0.npz",
+      "family": "slope_band",
+      "param": 28,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_slope_band_28_s1",
+      "map_path": "map_data/synthetic/syn_slope_band_28_s1.npz",
+      "family": "slope_band",
+      "param": 28,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_slope_band_33_s0",
+      "map_path": "map_data/synthetic/syn_slope_band_33_s0.npz",
+      "family": "slope_band",
+      "param": 33,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_slope_band_33_s1",
+      "map_path": "map_data/synthetic/syn_slope_band_33_s1.npz",
+      "family": "slope_band",
+      "param": 33,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_saddle_2p0_20_s0",
+      "map_path": "map_data/synthetic/syn_saddle_2p0_20_s0.npz",
+      "family": "saddle",
+      "param": [
+        2.0,
+        20
+      ],
+      "n_cases": 2
+    },
+    {
+      "map": "syn_saddle_2p0_20_s1",
+      "map_path": "map_data/synthetic/syn_saddle_2p0_20_s1.npz",
+      "family": "saddle",
+      "param": [
+        2.0,
+        20
+      ],
+      "n_cases": 2
+    },
+    {
+      "map": "syn_saddle_2p0_27_s0",
+      "map_path": "map_data/synthetic/syn_saddle_2p0_27_s0.npz",
+      "family": "saddle",
+      "param": [
+        2.0,
+        27
+      ],
+      "n_cases": 2
+    },
+    {
+      "map": "syn_saddle_2p0_27_s1",
+      "map_path": "map_data/synthetic/syn_saddle_2p0_27_s1.npz",
+      "family": "saddle",
+      "param": [
+        2.0,
+        27
+      ],
+      "n_cases": 2
+    },
+    {
+      "map": "syn_saddle_4p0_20_s0",
+      "map_path": "map_data/synthetic/syn_saddle_4p0_20_s0.npz",
+      "family": "saddle",
+      "param": [
+        4.0,
+        20
+      ],
+      "n_cases": 2
+    },
+    {
+      "map": "syn_saddle_4p0_20_s1",
+      "map_path": "map_data/synthetic/syn_saddle_4p0_20_s1.npz",
+      "family": "saddle",
+      "param": [
+        4.0,
+        20
+      ],
+      "n_cases": 2
+    },
+    {
+      "map": "syn_saddle_4p0_27_s0",
+      "map_path": "map_data/synthetic/syn_saddle_4p0_27_s0.npz",
+      "family": "saddle",
+      "param": [
+        4.0,
+        27
+      ],
+      "n_cases": 2
+    },
+    {
+      "map": "syn_saddle_4p0_27_s1",
+      "map_path": "map_data/synthetic/syn_saddle_4p0_27_s1.npz",
+      "family": "saddle",
+      "param": [
+        4.0,
+        27
+      ],
+      "n_cases": 2
+    },
+    {
+      "map": "syn_saddle_6p0_27_s0",
+      "map_path": "map_data/synthetic/syn_saddle_6p0_27_s0.npz",
+      "family": "saddle",
+      "param": [
+        6.0,
+        27
+      ],
+      "n_cases": 2
+    },
+    {
+      "map": "syn_saddle_6p0_27_s1",
+      "map_path": "map_data/synthetic/syn_saddle_6p0_27_s1.npz",
+      "family": "saddle",
+      "param": [
+        6.0,
+        27
+      ],
+      "n_cases": 2
+    },
+    {
+      "map": "syn_corridor_s_1p2_s0",
+      "map_path": "map_data/synthetic/syn_corridor_s_1p2_s0.npz",
+      "family": "corridor_s",
+      "param": 1.2,
+      "n_cases": 1
+    },
+    {
+      "map": "syn_corridor_s_1p2_s1",
+      "map_path": "map_data/synthetic/syn_corridor_s_1p2_s1.npz",
+      "family": "corridor_s",
+      "param": 1.2,
+      "n_cases": 1
+    },
+    {
+      "map": "syn_corridor_s_1p6_s0",
+      "map_path": "map_data/synthetic/syn_corridor_s_1p6_s0.npz",
+      "family": "corridor_s",
+      "param": 1.6,
+      "n_cases": 1
+    },
+    {
+      "map": "syn_corridor_s_1p6_s1",
+      "map_path": "map_data/synthetic/syn_corridor_s_1p6_s1.npz",
+      "family": "corridor_s",
+      "param": 1.6,
+      "n_cases": 1
+    },
+    {
+      "map": "syn_corridor_s_2p0_s0",
+      "map_path": "map_data/synthetic/syn_corridor_s_2p0_s0.npz",
+      "family": "corridor_s",
+      "param": 2.0,
+      "n_cases": 1
+    },
+    {
+      "map": "syn_corridor_s_2p0_s1",
+      "map_path": "map_data/synthetic/syn_corridor_s_2p0_s1.npz",
+      "family": "corridor_s",
+      "param": 2.0,
+      "n_cases": 1
+    },
+    {
+      "map": "syn_corridor_s_2p8_s0",
+      "map_path": "map_data/synthetic/syn_corridor_s_2p8_s0.npz",
+      "family": "corridor_s",
+      "param": 2.8,
+      "n_cases": 1
+    },
+    {
+      "map": "syn_corridor_s_2p8_s1",
+      "map_path": "map_data/synthetic/syn_corridor_s_2p8_s1.npz",
+      "family": "corridor_s",
+      "param": 2.8,
+      "n_cases": 1
+    },
+    {
+      "map": "syn_maze_4p0_s0",
+      "map_path": "map_data/synthetic/syn_maze_4p0_s0.npz",
+      "family": "maze",
+      "param": 4.0,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_maze_4p0_s1",
+      "map_path": "map_data/synthetic/syn_maze_4p0_s1.npz",
+      "family": "maze",
+      "param": 4.0,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_maze_5p0_s0",
+      "map_path": "map_data/synthetic/syn_maze_5p0_s0.npz",
+      "family": "maze",
+      "param": 5.0,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_maze_5p0_s1",
+      "map_path": "map_data/synthetic/syn_maze_5p0_s1.npz",
+      "family": "maze",
+      "param": 5.0,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_maze_6p0_s0",
+      "map_path": "map_data/synthetic/syn_maze_6p0_s0.npz",
+      "family": "maze",
+      "param": 6.0,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_maze_6p0_s1",
+      "map_path": "map_data/synthetic/syn_maze_6p0_s1.npz",
+      "family": "maze",
+      "param": 6.0,
+      "n_cases": 2
+    },
+    {
+      "map": "syn_boulders_15_s0",
+      "map_path": "map_data/synthetic/syn_boulders_15_s0.npz",
+      "family": "boulders",
+      "param": 15,
+      "n_cases": 3
+    },
+    {
+      "map": "syn_boulders_15_s1",
+      "map_path": "map_data/synthetic/syn_boulders_15_s1.npz",
+      "family": "boulders",
+      "param": 15,
+      "n_cases": 3
+    },
+    {
+      "map": "syn_boulders_30_s0",
+      "map_path": "map_data/synthetic/syn_boulders_30_s0.npz",
+      "family": "boulders",
+      "param": 30,
+      "n_cases": 3
+    },
+    {
+      "map": "syn_boulders_30_s1",
+      "map_path": "map_data/synthetic/syn_boulders_30_s1.npz",
+      "family": "boulders",
+      "param": 30,
+      "n_cases": 3
+    },
+    {
+      "map": "syn_boulders_50_s0",
+      "map_path": "map_data/synthetic/syn_boulders_50_s0.npz",
+      "family": "boulders",
+      "param": 50,
+      "n_cases": 3
+    },
+    {
+      "map": "syn_boulders_50_s1",
+      "map_path": "map_data/synthetic/syn_boulders_50_s1.npz",
+      "family": "boulders",
+      "param": 50,
+      "n_cases": 3
+    },
+    {
+      "map": "syn_boulders_dense_80_s0",
+      "map_path": "map_data/synthetic/syn_boulders_dense_80_s0.npz",
+      "family": "boulders_dense",
+      "param": 80,
+      "n_cases": 3
+    },
+    {
+      "map": "syn_boulders_dense_80_s1",
+      "map_path": "map_data/synthetic/syn_boulders_dense_80_s1.npz",
+      "family": "boulders_dense",
+      "param": 80,
+      "n_cases": 3
+    },
+    {
+      "map": "syn_boulders_dense_120_s0",
+      "map_path": "map_data/synthetic/syn_boulders_dense_120_s0.npz",
+      "family": "boulders_dense",
+      "param": 120,
+      "n_cases": 3
+    },
+    {
+      "map": "syn_boulders_dense_120_s1",
+      "map_path": "map_data/synthetic/syn_boulders_dense_120_s1.npz",
+      "family": "boulders_dense",
+      "param": 120,
+      "n_cases": 3
+    },
+    {
+      "map": "syn_boulders_dense_160_s0",
+      "map_path": "map_data/synthetic/syn_boulders_dense_160_s0.npz",
+      "family": "boulders_dense",
+      "param": 160,
+      "n_cases": 3
+    },
+    {
+      "map": "syn_boulders_dense_160_s1",
+      "map_path": "map_data/synthetic/syn_boulders_dense_160_s1.npz",
+      "family": "boulders_dense",
+      "param": 160,
+      "n_cases": 3
+    },
+    {
+      "map": "syn_blocked_0_s0",
+      "map_path": "map_data/synthetic/syn_blocked_0_s0.npz",
+      "family": "blocked",
+      "param": 0,
+      "n_cases": 2
+    }
+  ],
+  "cases": [
+    {
+      "id": "syn_gap_1p0_s0_00",
+      "map": "syn_gap_1p0_s0",
+      "map_path": "map_data/synthetic/syn_gap_1p0_s0.npz",
+      "category": "gap",
+      "family": "gap",
+      "param": 1.0,
+      "feasible": false,
+      "start": [
+        6.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        34.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 28.0,
+      "ref_len_3d_m": 28.015,
+      "ref_len_3d_anyangle_m": 28.03,
+      "detour_ratio": 1.001
+    },
+    {
+      "id": "syn_gap_1p0_s0_01",
+      "map": "syn_gap_1p0_s0",
+      "map_path": "map_data/synthetic/syn_gap_1p0_s0.npz",
+      "category": "gap",
+      "family": "gap",
+      "param": 1.0,
+      "feasible": false,
+      "start": [
+        6.0,
+        6.0,
+        0.5713
+      ],
+      "goal": [
+        34.0,
+        24.0,
+        0.5713
+      ],
+      "euclid_m": 33.287,
+      "ref_len_3d_m": 35.461,
+      "ref_len_3d_anyangle_m": 33.403,
+      "detour_ratio": 1.065
+    },
+    {
+      "id": "syn_gap_1p0_s1_00",
+      "map": "syn_gap_1p0_s1",
+      "map_path": "map_data/synthetic/syn_gap_1p0_s1.npz",
+      "category": "gap",
+      "family": "gap",
+      "param": 1.0,
+      "feasible": false,
+      "start": [
+        6.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        34.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 28.0,
+      "ref_len_3d_m": 28.002,
+      "ref_len_3d_anyangle_m": 28.005,
+      "detour_ratio": 1.0
+    },
+    {
+      "id": "syn_gap_1p0_s1_01",
+      "map": "syn_gap_1p0_s1",
+      "map_path": "map_data/synthetic/syn_gap_1p0_s1.npz",
+      "category": "gap",
+      "family": "gap",
+      "param": 1.0,
+      "feasible": false,
+      "start": [
+        6.0,
+        6.0,
+        0.5713
+      ],
+      "goal": [
+        34.0,
+        24.0,
+        0.5713
+      ],
+      "euclid_m": 33.287,
+      "ref_len_3d_m": 35.461,
+      "ref_len_3d_anyangle_m": 33.393,
+      "detour_ratio": 1.065
+    },
+    {
+      "id": "syn_gap_1p4_s0_00",
+      "map": "syn_gap_1p4_s0",
+      "map_path": "map_data/synthetic/syn_gap_1p4_s0.npz",
+      "category": "gap",
+      "family": "gap",
+      "param": 1.4,
+      "feasible": true,
+      "start": [
+        6.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        34.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 28.0,
+      "ref_len_3d_m": 28.012,
+      "ref_len_3d_anyangle_m": 28.025,
+      "detour_ratio": 1.0
+    },
+    {
+      "id": "syn_gap_1p4_s0_01",
+      "map": "syn_gap_1p4_s0",
+      "map_path": "map_data/synthetic/syn_gap_1p4_s0.npz",
+      "category": "gap",
+      "family": "gap",
+      "param": 1.4,
+      "feasible": true,
+      "start": [
+        6.0,
+        6.0,
+        0.5713
+      ],
+      "goal": [
+        34.0,
+        24.0,
+        0.5713
+      ],
+      "euclid_m": 33.287,
+      "ref_len_3d_m": 35.46,
+      "ref_len_3d_anyangle_m": 33.305,
+      "detour_ratio": 1.065
+    },
+    {
+      "id": "syn_gap_1p4_s1_00",
+      "map": "syn_gap_1p4_s1",
+      "map_path": "map_data/synthetic/syn_gap_1p4_s1.npz",
+      "category": "gap",
+      "family": "gap",
+      "param": 1.4,
+      "feasible": true,
+      "start": [
+        6.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        34.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 28.0,
+      "ref_len_3d_m": 28.012,
+      "ref_len_3d_anyangle_m": 28.023,
+      "detour_ratio": 1.0
+    },
+    {
+      "id": "syn_gap_1p4_s1_01",
+      "map": "syn_gap_1p4_s1",
+      "map_path": "map_data/synthetic/syn_gap_1p4_s1.npz",
+      "category": "gap",
+      "family": "gap",
+      "param": 1.4,
+      "feasible": true,
+      "start": [
+        6.0,
+        6.0,
+        0.5713
+      ],
+      "goal": [
+        34.0,
+        24.0,
+        0.5713
+      ],
+      "euclid_m": 33.287,
+      "ref_len_3d_m": 35.461,
+      "ref_len_3d_anyangle_m": 33.306,
+      "detour_ratio": 1.065
+    },
+    {
+      "id": "syn_gap_1p8_s0_00",
+      "map": "syn_gap_1p8_s0",
+      "map_path": "map_data/synthetic/syn_gap_1p8_s0.npz",
+      "category": "gap",
+      "family": "gap",
+      "param": 1.8,
+      "feasible": true,
+      "start": [
+        6.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        34.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 28.0,
+      "ref_len_3d_m": 28.011,
+      "ref_len_3d_anyangle_m": 28.021,
+      "detour_ratio": 1.0
+    },
+    {
+      "id": "syn_gap_1p8_s0_01",
+      "map": "syn_gap_1p8_s0",
+      "map_path": "map_data/synthetic/syn_gap_1p8_s0.npz",
+      "category": "gap",
+      "family": "gap",
+      "param": 1.8,
+      "feasible": true,
+      "start": [
+        6.0,
+        6.0,
+        0.5713
+      ],
+      "goal": [
+        34.0,
+        24.0,
+        0.5713
+      ],
+      "euclid_m": 33.287,
+      "ref_len_3d_m": 35.46,
+      "ref_len_3d_anyangle_m": 33.308,
+      "detour_ratio": 1.065
+    },
+    {
+      "id": "syn_gap_1p8_s1_00",
+      "map": "syn_gap_1p8_s1",
+      "map_path": "map_data/synthetic/syn_gap_1p8_s1.npz",
+      "category": "gap",
+      "family": "gap",
+      "param": 1.8,
+      "feasible": true,
+      "start": [
+        6.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        34.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 28.0,
+      "ref_len_3d_m": 28.006,
+      "ref_len_3d_anyangle_m": 28.013,
+      "detour_ratio": 1.0
+    },
+    {
+      "id": "syn_gap_1p8_s1_01",
+      "map": "syn_gap_1p8_s1",
+      "map_path": "map_data/synthetic/syn_gap_1p8_s1.npz",
+      "category": "gap",
+      "family": "gap",
+      "param": 1.8,
+      "feasible": true,
+      "start": [
+        6.0,
+        6.0,
+        0.5713
+      ],
+      "goal": [
+        34.0,
+        24.0,
+        0.5713
+      ],
+      "euclid_m": 33.287,
+      "ref_len_3d_m": 35.461,
+      "ref_len_3d_anyangle_m": 33.308,
+      "detour_ratio": 1.065
+    },
+    {
+      "id": "syn_gap_2p4_s0_00",
+      "map": "syn_gap_2p4_s0",
+      "map_path": "map_data/synthetic/syn_gap_2p4_s0.npz",
+      "category": "gap",
+      "family": "gap",
+      "param": 2.4,
+      "feasible": true,
+      "start": [
+        6.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        34.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 28.0,
+      "ref_len_3d_m": 28.012,
+      "ref_len_3d_anyangle_m": 28.024,
+      "detour_ratio": 1.0
+    },
+    {
+      "id": "syn_gap_2p4_s0_01",
+      "map": "syn_gap_2p4_s0",
+      "map_path": "map_data/synthetic/syn_gap_2p4_s0.npz",
+      "category": "gap",
+      "family": "gap",
+      "param": 2.4,
+      "feasible": true,
+      "start": [
+        6.0,
+        6.0,
+        0.5713
+      ],
+      "goal": [
+        34.0,
+        24.0,
+        0.5713
+      ],
+      "euclid_m": 33.287,
+      "ref_len_3d_m": 35.46,
+      "ref_len_3d_anyangle_m": 33.321,
+      "detour_ratio": 1.065
+    },
+    {
+      "id": "syn_gap_2p4_s1_00",
+      "map": "syn_gap_2p4_s1",
+      "map_path": "map_data/synthetic/syn_gap_2p4_s1.npz",
+      "category": "gap",
+      "family": "gap",
+      "param": 2.4,
+      "feasible": true,
+      "start": [
+        6.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        34.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 28.0,
+      "ref_len_3d_m": 28.005,
+      "ref_len_3d_anyangle_m": 28.011,
+      "detour_ratio": 1.0
+    },
+    {
+      "id": "syn_gap_2p4_s1_01",
+      "map": "syn_gap_2p4_s1",
+      "map_path": "map_data/synthetic/syn_gap_2p4_s1.npz",
+      "category": "gap",
+      "family": "gap",
+      "param": 2.4,
+      "feasible": true,
+      "start": [
+        6.0,
+        6.0,
+        0.5713
+      ],
+      "goal": [
+        34.0,
+        24.0,
+        0.5713
+      ],
+      "euclid_m": 33.287,
+      "ref_len_3d_m": 35.461,
+      "ref_len_3d_anyangle_m": 33.325,
+      "detour_ratio": 1.065
+    },
+    {
+      "id": "syn_gap_3p2_s0_00",
+      "map": "syn_gap_3p2_s0",
+      "map_path": "map_data/synthetic/syn_gap_3p2_s0.npz",
+      "category": "gap",
+      "family": "gap",
+      "param": 3.2,
+      "feasible": true,
+      "start": [
+        6.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        34.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 28.0,
+      "ref_len_3d_m": 28.009,
+      "ref_len_3d_anyangle_m": 28.018,
+      "detour_ratio": 1.0
+    },
+    {
+      "id": "syn_gap_3p2_s0_01",
+      "map": "syn_gap_3p2_s0",
+      "map_path": "map_data/synthetic/syn_gap_3p2_s0.npz",
+      "category": "gap",
+      "family": "gap",
+      "param": 3.2,
+      "feasible": true,
+      "start": [
+        6.0,
+        6.0,
+        0.5713
+      ],
+      "goal": [
+        34.0,
+        24.0,
+        0.5713
+      ],
+      "euclid_m": 33.287,
+      "ref_len_3d_m": 35.461,
+      "ref_len_3d_anyangle_m": 33.335,
+      "detour_ratio": 1.065
+    },
+    {
+      "id": "syn_gap_3p2_s1_00",
+      "map": "syn_gap_3p2_s1",
+      "map_path": "map_data/synthetic/syn_gap_3p2_s1.npz",
+      "category": "gap",
+      "family": "gap",
+      "param": 3.2,
+      "feasible": true,
+      "start": [
+        6.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        34.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 28.0,
+      "ref_len_3d_m": 28.011,
+      "ref_len_3d_anyangle_m": 28.022,
+      "detour_ratio": 1.0
+    },
+    {
+      "id": "syn_gap_3p2_s1_01",
+      "map": "syn_gap_3p2_s1",
+      "map_path": "map_data/synthetic/syn_gap_3p2_s1.npz",
+      "category": "gap",
+      "family": "gap",
+      "param": 3.2,
+      "feasible": true,
+      "start": [
+        6.0,
+        6.0,
+        0.5713
+      ],
+      "goal": [
+        34.0,
+        24.0,
+        0.5713
+      ],
+      "euclid_m": 33.287,
+      "ref_len_3d_m": 35.461,
+      "ref_len_3d_anyangle_m": 33.434,
+      "detour_ratio": 1.065
+    },
+    {
+      "id": "syn_slope_band_10_s0_00",
+      "map": "syn_slope_band_10_s0",
+      "map_path": "map_data/synthetic/syn_slope_band_10_s0.npz",
+      "category": "slope_band",
+      "family": "slope_band",
+      "param": 10,
+      "feasible": true,
+      "start": [
+        5.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        35.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 30.0,
+      "ref_len_3d_m": 30.0,
+      "ref_len_3d_anyangle_m": 30.0,
+      "detour_ratio": 1.0
+    },
+    {
+      "id": "syn_slope_band_10_s0_01",
+      "map": "syn_slope_band_10_s0",
+      "map_path": "map_data/synthetic/syn_slope_band_10_s0.npz",
+      "category": "slope_band",
+      "family": "slope_band",
+      "param": 10,
+      "feasible": true,
+      "start": [
+        5.0,
+        8.0,
+        0.4366
+      ],
+      "goal": [
+        35.0,
+        22.0,
+        0.4366
+      ],
+      "euclid_m": 33.106,
+      "ref_len_3d_m": 35.801,
+      "ref_len_3d_anyangle_m": 33.559,
+      "detour_ratio": 1.081
+    },
+    {
+      "id": "syn_slope_band_10_s1_00",
+      "map": "syn_slope_band_10_s1",
+      "map_path": "map_data/synthetic/syn_slope_band_10_s1.npz",
+      "category": "slope_band",
+      "family": "slope_band",
+      "param": 10,
+      "feasible": true,
+      "start": [
+        5.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        35.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 30.0,
+      "ref_len_3d_m": 30.001,
+      "ref_len_3d_anyangle_m": 30.001,
+      "detour_ratio": 1.0
+    },
+    {
+      "id": "syn_slope_band_10_s1_01",
+      "map": "syn_slope_band_10_s1",
+      "map_path": "map_data/synthetic/syn_slope_band_10_s1.npz",
+      "category": "slope_band",
+      "family": "slope_band",
+      "param": 10,
+      "feasible": true,
+      "start": [
+        5.0,
+        8.0,
+        0.4366
+      ],
+      "goal": [
+        35.0,
+        22.0,
+        0.4366
+      ],
+      "euclid_m": 33.106,
+      "ref_len_3d_m": 35.802,
+      "ref_len_3d_anyangle_m": 33.537,
+      "detour_ratio": 1.081
+    },
+    {
+      "id": "syn_slope_band_28_s0_00",
+      "map": "syn_slope_band_28_s0",
+      "map_path": "map_data/synthetic/syn_slope_band_28_s0.npz",
+      "category": "slope_band",
+      "family": "slope_band",
+      "param": 28,
+      "feasible": true,
+      "start": [
+        5.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        35.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 30.0,
+      "ref_len_3d_m": 30.001,
+      "ref_len_3d_anyangle_m": 30.002,
+      "detour_ratio": 1.0
+    },
+    {
+      "id": "syn_slope_band_28_s0_01",
+      "map": "syn_slope_band_28_s0",
+      "map_path": "map_data/synthetic/syn_slope_band_28_s0.npz",
+      "category": "slope_band",
+      "family": "slope_band",
+      "param": 28,
+      "feasible": true,
+      "start": [
+        5.0,
+        8.0,
+        0.4366
+      ],
+      "goal": [
+        35.0,
+        22.0,
+        0.4366
+      ],
+      "euclid_m": 33.106,
+      "ref_len_3d_m": 35.816,
+      "ref_len_3d_anyangle_m": 35.673,
+      "detour_ratio": 1.082
+    },
+    {
+      "id": "syn_slope_band_28_s1_00",
+      "map": "syn_slope_band_28_s1",
+      "map_path": "map_data/synthetic/syn_slope_band_28_s1.npz",
+      "category": "slope_band",
+      "family": "slope_band",
+      "param": 28,
+      "feasible": true,
+      "start": [
+        5.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        35.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 30.0,
+      "ref_len_3d_m": 30.002,
+      "ref_len_3d_anyangle_m": 30.003,
+      "detour_ratio": 1.0
+    },
+    {
+      "id": "syn_slope_band_28_s1_01",
+      "map": "syn_slope_band_28_s1",
+      "map_path": "map_data/synthetic/syn_slope_band_28_s1.npz",
+      "category": "slope_band",
+      "family": "slope_band",
+      "param": 28,
+      "feasible": true,
+      "start": [
+        5.0,
+        8.0,
+        0.4366
+      ],
+      "goal": [
+        35.0,
+        22.0,
+        0.4366
+      ],
+      "euclid_m": 33.106,
+      "ref_len_3d_m": 35.816,
+      "ref_len_3d_anyangle_m": 35.669,
+      "detour_ratio": 1.082
+    },
+    {
+      "id": "syn_slope_band_33_s0_00",
+      "map": "syn_slope_band_33_s0",
+      "map_path": "map_data/synthetic/syn_slope_band_33_s0.npz",
+      "category": "slope_band",
+      "family": "slope_band",
+      "param": 33,
+      "feasible": false,
+      "start": [
+        5.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        35.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 30.0,
+      "ref_len_3d_m": null,
+      "ref_len_3d_anyangle_m": null,
+      "detour_ratio": null
+    },
+    {
+      "id": "syn_slope_band_33_s0_01",
+      "map": "syn_slope_band_33_s0",
+      "map_path": "map_data/synthetic/syn_slope_band_33_s0.npz",
+      "category": "slope_band",
+      "family": "slope_band",
+      "param": 33,
+      "feasible": false,
+      "start": [
+        5.0,
+        8.0,
+        0.4366
+      ],
+      "goal": [
+        35.0,
+        22.0,
+        0.4366
+      ],
+      "euclid_m": 33.106,
+      "ref_len_3d_m": null,
+      "ref_len_3d_anyangle_m": null,
+      "detour_ratio": null
+    },
+    {
+      "id": "syn_slope_band_33_s1_00",
+      "map": "syn_slope_band_33_s1",
+      "map_path": "map_data/synthetic/syn_slope_band_33_s1.npz",
+      "category": "slope_band",
+      "family": "slope_band",
+      "param": 33,
+      "feasible": false,
+      "start": [
+        5.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        35.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 30.0,
+      "ref_len_3d_m": null,
+      "ref_len_3d_anyangle_m": null,
+      "detour_ratio": null
+    },
+    {
+      "id": "syn_slope_band_33_s1_01",
+      "map": "syn_slope_band_33_s1",
+      "map_path": "map_data/synthetic/syn_slope_band_33_s1.npz",
+      "category": "slope_band",
+      "family": "slope_band",
+      "param": 33,
+      "feasible": false,
+      "start": [
+        5.0,
+        8.0,
+        0.4366
+      ],
+      "goal": [
+        35.0,
+        22.0,
+        0.4366
+      ],
+      "euclid_m": 33.106,
+      "ref_len_3d_m": null,
+      "ref_len_3d_anyangle_m": null,
+      "detour_ratio": null
+    },
+    {
+      "id": "syn_saddle_2p0_20_s0_00",
+      "map": "syn_saddle_2p0_20_s0",
+      "map_path": "map_data/synthetic/syn_saddle_2p0_20_s0.npz",
+      "category": "saddle",
+      "family": "saddle",
+      "param": [
+        2.0,
+        20
+      ],
+      "feasible": true,
+      "start": [
+        6.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        34.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 28.0,
+      "ref_len_3d_m": 28.233,
+      "ref_len_3d_anyangle_m": 28.439,
+      "detour_ratio": 1.008
+    },
+    {
+      "id": "syn_saddle_2p0_20_s0_01",
+      "map": "syn_saddle_2p0_20_s0",
+      "map_path": "map_data/synthetic/syn_saddle_2p0_20_s0.npz",
+      "category": "saddle",
+      "family": "saddle",
+      "param": [
+        2.0,
+        20
+      ],
+      "feasible": true,
+      "start": [
+        6.0,
+        4.0,
+        0.666
+      ],
+      "goal": [
+        34.0,
+        26.0,
+        0.666
+      ],
+      "euclid_m": 35.609,
+      "ref_len_3d_m": 37.286,
+      "ref_len_3d_anyangle_m": 36.43,
+      "detour_ratio": 1.047
+    },
+    {
+      "id": "syn_saddle_2p0_20_s1_00",
+      "map": "syn_saddle_2p0_20_s1",
+      "map_path": "map_data/synthetic/syn_saddle_2p0_20_s1.npz",
+      "category": "saddle",
+      "family": "saddle",
+      "param": [
+        2.0,
+        20
+      ],
+      "feasible": true,
+      "start": [
+        6.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        34.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 28.0,
+      "ref_len_3d_m": 28.23,
+      "ref_len_3d_anyangle_m": 28.434,
+      "detour_ratio": 1.008
+    },
+    {
+      "id": "syn_saddle_2p0_20_s1_01",
+      "map": "syn_saddle_2p0_20_s1",
+      "map_path": "map_data/synthetic/syn_saddle_2p0_20_s1.npz",
+      "category": "saddle",
+      "family": "saddle",
+      "param": [
+        2.0,
+        20
+      ],
+      "feasible": true,
+      "start": [
+        6.0,
+        4.0,
+        0.666
+      ],
+      "goal": [
+        34.0,
+        26.0,
+        0.666
+      ],
+      "euclid_m": 35.609,
+      "ref_len_3d_m": 37.297,
+      "ref_len_3d_anyangle_m": 36.515,
+      "detour_ratio": 1.047
+    },
+    {
+      "id": "syn_saddle_2p0_27_s0_00",
+      "map": "syn_saddle_2p0_27_s0",
+      "map_path": "map_data/synthetic/syn_saddle_2p0_27_s0.npz",
+      "category": "saddle",
+      "family": "saddle",
+      "param": [
+        2.0,
+        27
+      ],
+      "feasible": true,
+      "start": [
+        6.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        34.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 28.0,
+      "ref_len_3d_m": 28.436,
+      "ref_len_3d_anyangle_m": 28.789,
+      "detour_ratio": 1.016
+    },
+    {
+      "id": "syn_saddle_2p0_27_s0_01",
+      "map": "syn_saddle_2p0_27_s0",
+      "map_path": "map_data/synthetic/syn_saddle_2p0_27_s0.npz",
+      "category": "saddle",
+      "family": "saddle",
+      "param": [
+        2.0,
+        27
+      ],
+      "feasible": true,
+      "start": [
+        6.0,
+        4.0,
+        0.666
+      ],
+      "goal": [
+        34.0,
+        26.0,
+        0.666
+      ],
+      "euclid_m": 35.609,
+      "ref_len_3d_m": 37.44,
+      "ref_len_3d_anyangle_m": 36.731,
+      "detour_ratio": 1.051
+    },
+    {
+      "id": "syn_saddle_2p0_27_s1_00",
+      "map": "syn_saddle_2p0_27_s1",
+      "map_path": "map_data/synthetic/syn_saddle_2p0_27_s1.npz",
+      "category": "saddle",
+      "family": "saddle",
+      "param": [
+        2.0,
+        27
+      ],
+      "feasible": true,
+      "start": [
+        6.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        34.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 28.0,
+      "ref_len_3d_m": 28.448,
+      "ref_len_3d_anyangle_m": 28.81,
+      "detour_ratio": 1.016
+    },
+    {
+      "id": "syn_saddle_2p0_27_s1_01",
+      "map": "syn_saddle_2p0_27_s1",
+      "map_path": "map_data/synthetic/syn_saddle_2p0_27_s1.npz",
+      "category": "saddle",
+      "family": "saddle",
+      "param": [
+        2.0,
+        27
+      ],
+      "feasible": true,
+      "start": [
+        6.0,
+        4.0,
+        0.666
+      ],
+      "goal": [
+        34.0,
+        26.0,
+        0.666
+      ],
+      "euclid_m": 35.609,
+      "ref_len_3d_m": 37.445,
+      "ref_len_3d_anyangle_m": 36.848,
+      "detour_ratio": 1.052
+    },
+    {
+      "id": "syn_saddle_4p0_20_s0_00",
+      "map": "syn_saddle_4p0_20_s0",
+      "map_path": "map_data/synthetic/syn_saddle_4p0_20_s0.npz",
+      "category": "saddle",
+      "family": "saddle",
+      "param": [
+        4.0,
+        20
+      ],
+      "feasible": true,
+      "start": [
+        6.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        34.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 28.0,
+      "ref_len_3d_m": 28.222,
+      "ref_len_3d_anyangle_m": 28.419,
+      "detour_ratio": 1.008
+    },
+    {
+      "id": "syn_saddle_4p0_20_s0_01",
+      "map": "syn_saddle_4p0_20_s0",
+      "map_path": "map_data/synthetic/syn_saddle_4p0_20_s0.npz",
+      "category": "saddle",
+      "family": "saddle",
+      "param": [
+        4.0,
+        20
+      ],
+      "feasible": true,
+      "start": [
+        6.0,
+        4.0,
+        0.666
+      ],
+      "goal": [
+        34.0,
+        26.0,
+        0.666
+      ],
+      "euclid_m": 35.609,
+      "ref_len_3d_m": 37.265,
+      "ref_len_3d_anyangle_m": 36.122,
+      "detour_ratio": 1.047
+    },
+    {
+      "id": "syn_saddle_4p0_20_s1_00",
+      "map": "syn_saddle_4p0_20_s1",
+      "map_path": "map_data/synthetic/syn_saddle_4p0_20_s1.npz",
+      "category": "saddle",
+      "family": "saddle",
+      "param": [
+        4.0,
+        20
+      ],
+      "feasible": true,
+      "start": [
+        6.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        34.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 28.0,
+      "ref_len_3d_m": 28.232,
+      "ref_len_3d_anyangle_m": 28.438,
+      "detour_ratio": 1.008
+    },
+    {
+      "id": "syn_saddle_4p0_20_s1_01",
+      "map": "syn_saddle_4p0_20_s1",
+      "map_path": "map_data/synthetic/syn_saddle_4p0_20_s1.npz",
+      "category": "saddle",
+      "family": "saddle",
+      "param": [
+        4.0,
+        20
+      ],
+      "feasible": true,
+      "start": [
+        6.0,
+        4.0,
+        0.666
+      ],
+      "goal": [
+        34.0,
+        26.0,
+        0.666
+      ],
+      "euclid_m": 35.609,
+      "ref_len_3d_m": 37.27,
+      "ref_len_3d_anyangle_m": 36.139,
+      "detour_ratio": 1.047
+    },
+    {
+      "id": "syn_saddle_4p0_27_s0_00",
+      "map": "syn_saddle_4p0_27_s0",
+      "map_path": "map_data/synthetic/syn_saddle_4p0_27_s0.npz",
+      "category": "saddle",
+      "family": "saddle",
+      "param": [
+        4.0,
+        27
+      ],
+      "feasible": true,
+      "start": [
+        6.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        34.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 28.0,
+      "ref_len_3d_m": 28.454,
+      "ref_len_3d_anyangle_m": 28.82,
+      "detour_ratio": 1.016
+    },
+    {
+      "id": "syn_saddle_4p0_27_s0_01",
+      "map": "syn_saddle_4p0_27_s0",
+      "map_path": "map_data/synthetic/syn_saddle_4p0_27_s0.npz",
+      "category": "saddle",
+      "family": "saddle",
+      "param": [
+        4.0,
+        27
+      ],
+      "feasible": true,
+      "start": [
+        6.0,
+        4.0,
+        0.666
+      ],
+      "goal": [
+        34.0,
+        26.0,
+        0.666
+      ],
+      "euclid_m": 35.609,
+      "ref_len_3d_m": 37.411,
+      "ref_len_3d_anyangle_m": 36.45,
+      "detour_ratio": 1.051
+    },
+    {
+      "id": "syn_saddle_4p0_27_s1_00",
+      "map": "syn_saddle_4p0_27_s1",
+      "map_path": "map_data/synthetic/syn_saddle_4p0_27_s1.npz",
+      "category": "saddle",
+      "family": "saddle",
+      "param": [
+        4.0,
+        27
+      ],
+      "feasible": true,
+      "start": [
+        6.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        34.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 28.0,
+      "ref_len_3d_m": 28.452,
+      "ref_len_3d_anyangle_m": 28.817,
+      "detour_ratio": 1.016
+    },
+    {
+      "id": "syn_saddle_4p0_27_s1_01",
+      "map": "syn_saddle_4p0_27_s1",
+      "map_path": "map_data/synthetic/syn_saddle_4p0_27_s1.npz",
+      "category": "saddle",
+      "family": "saddle",
+      "param": [
+        4.0,
+        27
+      ],
+      "feasible": true,
+      "start": [
+        6.0,
+        4.0,
+        0.666
+      ],
+      "goal": [
+        34.0,
+        26.0,
+        0.666
+      ],
+      "euclid_m": 35.609,
+      "ref_len_3d_m": 37.433,
+      "ref_len_3d_anyangle_m": 36.478,
+      "detour_ratio": 1.051
+    },
+    {
+      "id": "syn_saddle_6p0_27_s0_00",
+      "map": "syn_saddle_6p0_27_s0",
+      "map_path": "map_data/synthetic/syn_saddle_6p0_27_s0.npz",
+      "category": "saddle",
+      "family": "saddle",
+      "param": [
+        6.0,
+        27
+      ],
+      "feasible": true,
+      "start": [
+        6.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        34.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 28.0,
+      "ref_len_3d_m": 28.446,
+      "ref_len_3d_anyangle_m": 28.806,
+      "detour_ratio": 1.016
+    },
+    {
+      "id": "syn_saddle_6p0_27_s0_01",
+      "map": "syn_saddle_6p0_27_s0",
+      "map_path": "map_data/synthetic/syn_saddle_6p0_27_s0.npz",
+      "category": "saddle",
+      "family": "saddle",
+      "param": [
+        6.0,
+        27
+      ],
+      "feasible": true,
+      "start": [
+        6.0,
+        4.0,
+        0.666
+      ],
+      "goal": [
+        34.0,
+        26.0,
+        0.666
+      ],
+      "euclid_m": 35.609,
+      "ref_len_3d_m": 37.416,
+      "ref_len_3d_anyangle_m": 36.412,
+      "detour_ratio": 1.051
+    },
+    {
+      "id": "syn_saddle_6p0_27_s1_00",
+      "map": "syn_saddle_6p0_27_s1",
+      "map_path": "map_data/synthetic/syn_saddle_6p0_27_s1.npz",
+      "category": "saddle",
+      "family": "saddle",
+      "param": [
+        6.0,
+        27
+      ],
+      "feasible": true,
+      "start": [
+        6.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        34.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 28.0,
+      "ref_len_3d_m": 28.454,
+      "ref_len_3d_anyangle_m": 28.82,
+      "detour_ratio": 1.016
+    },
+    {
+      "id": "syn_saddle_6p0_27_s1_01",
+      "map": "syn_saddle_6p0_27_s1",
+      "map_path": "map_data/synthetic/syn_saddle_6p0_27_s1.npz",
+      "category": "saddle",
+      "family": "saddle",
+      "param": [
+        6.0,
+        27
+      ],
+      "feasible": true,
+      "start": [
+        6.0,
+        4.0,
+        0.666
+      ],
+      "goal": [
+        34.0,
+        26.0,
+        0.666
+      ],
+      "euclid_m": 35.609,
+      "ref_len_3d_m": 37.422,
+      "ref_len_3d_anyangle_m": 36.513,
+      "detour_ratio": 1.051
+    },
+    {
+      "id": "syn_corridor_s_1p2_s0_00",
+      "map": "syn_corridor_s_1p2_s0",
+      "map_path": "map_data/synthetic/syn_corridor_s_1p2_s0.npz",
+      "category": "corridor_s",
+      "family": "corridor_s",
+      "param": 1.2,
+      "feasible": false,
+      "start": [
+        2.0,
+        19.0,
+        -0.2502
+      ],
+      "goal": [
+        38.0,
+        9.8,
+        -0.2502
+      ],
+      "euclid_m": 37.157,
+      "ref_len_3d_m": 69.803,
+      "ref_len_3d_anyangle_m": 66.844,
+      "detour_ratio": 1.879
+    },
+    {
+      "id": "syn_corridor_s_1p2_s1_00",
+      "map": "syn_corridor_s_1p2_s1",
+      "map_path": "map_data/synthetic/syn_corridor_s_1p2_s1.npz",
+      "category": "corridor_s",
+      "family": "corridor_s",
+      "param": 1.2,
+      "feasible": false,
+      "start": [
+        2.0,
+        19.2,
+        -0.2502
+      ],
+      "goal": [
+        38.0,
+        10.0,
+        -0.2502
+      ],
+      "euclid_m": 37.157,
+      "ref_len_3d_m": 69.805,
+      "ref_len_3d_anyangle_m": 66.62,
+      "detour_ratio": 1.879
+    },
+    {
+      "id": "syn_corridor_s_1p6_s0_00",
+      "map": "syn_corridor_s_1p6_s0",
+      "map_path": "map_data/synthetic/syn_corridor_s_1p6_s0.npz",
+      "category": "corridor_s",
+      "family": "corridor_s",
+      "param": 1.6,
+      "feasible": true,
+      "start": [
+        2.0,
+        20.2,
+        -0.2554
+      ],
+      "goal": [
+        38.0,
+        10.8,
+        -0.2554
+      ],
+      "euclid_m": 37.207,
+      "ref_len_3d_m": 68.198,
+      "ref_len_3d_anyangle_m": 65.206,
+      "detour_ratio": 1.833
+    },
+    {
+      "id": "syn_corridor_s_1p6_s1_00",
+      "map": "syn_corridor_s_1p6_s1",
+      "map_path": "map_data/synthetic/syn_corridor_s_1p6_s1.npz",
+      "category": "corridor_s",
+      "family": "corridor_s",
+      "param": 1.6,
+      "feasible": true,
+      "start": [
+        2.0,
+        18.2,
+        -0.245
+      ],
+      "goal": [
+        38.0,
+        9.2,
+        -0.245
+      ],
+      "euclid_m": 37.108,
+      "ref_len_3d_m": 68.055,
+      "ref_len_3d_anyangle_m": 64.903,
+      "detour_ratio": 1.834
+    },
+    {
+      "id": "syn_corridor_s_2p0_s0_00",
+      "map": "syn_corridor_s_2p0_s0",
+      "map_path": "map_data/synthetic/syn_corridor_s_2p0_s0.npz",
+      "category": "corridor_s",
+      "family": "corridor_s",
+      "param": 2.0,
+      "feasible": true,
+      "start": [
+        2.0,
+        19.4,
+        -0.2554
+      ],
+      "goal": [
+        38.0,
+        10.0,
+        -0.2554
+      ],
+      "euclid_m": 37.207,
+      "ref_len_3d_m": 65.934,
+      "ref_len_3d_anyangle_m": 63.2,
+      "detour_ratio": 1.772
+    },
+    {
+      "id": "syn_corridor_s_2p0_s1_00",
+      "map": "syn_corridor_s_2p0_s1",
+      "map_path": "map_data/synthetic/syn_corridor_s_2p0_s1.npz",
+      "category": "corridor_s",
+      "family": "corridor_s",
+      "param": 2.0,
+      "feasible": true,
+      "start": [
+        2.0,
+        18.6,
+        -0.2502
+      ],
+      "goal": [
+        38.0,
+        9.4,
+        -0.2502
+      ],
+      "euclid_m": 37.157,
+      "ref_len_3d_m": 65.898,
+      "ref_len_3d_anyangle_m": 63.194,
+      "detour_ratio": 1.774
+    },
+    {
+      "id": "syn_corridor_s_2p8_s0_00",
+      "map": "syn_corridor_s_2p8_s0",
+      "map_path": "map_data/synthetic/syn_corridor_s_2p8_s0.npz",
+      "category": "corridor_s",
+      "family": "corridor_s",
+      "param": 2.8,
+      "feasible": true,
+      "start": [
+        2.0,
+        21.0,
+        -0.245
+      ],
+      "goal": [
+        38.0,
+        12.0,
+        -0.245
+      ],
+      "euclid_m": 37.108,
+      "ref_len_3d_m": 62.43,
+      "ref_len_3d_anyangle_m": 60.014,
+      "detour_ratio": 1.682
+    },
+    {
+      "id": "syn_corridor_s_2p8_s1_00",
+      "map": "syn_corridor_s_2p8_s1",
+      "map_path": "map_data/synthetic/syn_corridor_s_2p8_s1.npz",
+      "category": "corridor_s",
+      "family": "corridor_s",
+      "param": 2.8,
+      "feasible": true,
+      "start": [
+        2.0,
+        21.0,
+        -0.2502
+      ],
+      "goal": [
+        38.0,
+        11.8,
+        -0.2502
+      ],
+      "euclid_m": 37.157,
+      "ref_len_3d_m": 62.701,
+      "ref_len_3d_anyangle_m": 60.114,
+      "detour_ratio": 1.687
+    },
+    {
+      "id": "syn_maze_4p0_s0_00",
+      "map": "syn_maze_4p0_s0",
+      "map_path": "map_data/synthetic/syn_maze_4p0_s0.npz",
+      "category": "maze",
+      "family": "maze",
+      "param": 4.0,
+      "feasible": true,
+      "start": [
+        2.0,
+        2.0,
+        0.588
+      ],
+      "goal": [
+        38.0,
+        26.0,
+        0.588
+      ],
+      "euclid_m": 43.267,
+      "ref_len_3d_m": 88.961,
+      "ref_len_3d_anyangle_m": 85.204,
+      "detour_ratio": 2.056
+    },
+    {
+      "id": "syn_maze_4p0_s0_01",
+      "map": "syn_maze_4p0_s0",
+      "map_path": "map_data/synthetic/syn_maze_4p0_s0.npz",
+      "category": "maze",
+      "family": "maze",
+      "param": 4.0,
+      "feasible": true,
+      "start": [
+        2.0,
+        26.0,
+        -0.588
+      ],
+      "goal": [
+        38.0,
+        2.0,
+        -0.588
+      ],
+      "euclid_m": 43.267,
+      "ref_len_3d_m": 65.723,
+      "ref_len_3d_anyangle_m": 63.853,
+      "detour_ratio": 1.519
+    },
+    {
+      "id": "syn_maze_4p0_s1_00",
+      "map": "syn_maze_4p0_s1",
+      "map_path": "map_data/synthetic/syn_maze_4p0_s1.npz",
+      "category": "maze",
+      "family": "maze",
+      "param": 4.0,
+      "feasible": true,
+      "start": [
+        2.0,
+        2.0,
+        0.588
+      ],
+      "goal": [
+        38.0,
+        26.0,
+        0.588
+      ],
+      "euclid_m": 43.267,
+      "ref_len_3d_m": 82.135,
+      "ref_len_3d_anyangle_m": 79.78,
+      "detour_ratio": 1.898
+    },
+    {
+      "id": "syn_maze_4p0_s1_01",
+      "map": "syn_maze_4p0_s1",
+      "map_path": "map_data/synthetic/syn_maze_4p0_s1.npz",
+      "category": "maze",
+      "family": "maze",
+      "param": 4.0,
+      "feasible": true,
+      "start": [
+        2.0,
+        26.0,
+        -0.588
+      ],
+      "goal": [
+        38.0,
+        2.0,
+        -0.588
+      ],
+      "euclid_m": 43.267,
+      "ref_len_3d_m": 64.729,
+      "ref_len_3d_anyangle_m": 62.393,
+      "detour_ratio": 1.496
+    },
+    {
+      "id": "syn_maze_5p0_s0_00",
+      "map": "syn_maze_5p0_s0",
+      "map_path": "map_data/synthetic/syn_maze_5p0_s0.npz",
+      "category": "maze",
+      "family": "maze",
+      "param": 5.0,
+      "feasible": true,
+      "start": [
+        2.4,
+        2.4,
+        0.6213
+      ],
+      "goal": [
+        37.6,
+        27.6,
+        0.6213
+      ],
+      "euclid_m": 43.291,
+      "ref_len_3d_m": 74.077,
+      "ref_len_3d_anyangle_m": 72.917,
+      "detour_ratio": 1.711
+    },
+    {
+      "id": "syn_maze_5p0_s0_01",
+      "map": "syn_maze_5p0_s0",
+      "map_path": "map_data/synthetic/syn_maze_5p0_s0.npz",
+      "category": "maze",
+      "family": "maze",
+      "param": 5.0,
+      "feasible": true,
+      "start": [
+        2.4,
+        27.6,
+        -0.6213
+      ],
+      "goal": [
+        37.6,
+        2.4,
+        -0.6213
+      ],
+      "euclid_m": 43.291,
+      "ref_len_3d_m": 56.007,
+      "ref_len_3d_anyangle_m": 54.202,
+      "detour_ratio": 1.294
+    },
+    {
+      "id": "syn_maze_5p0_s1_00",
+      "map": "syn_maze_5p0_s1",
+      "map_path": "map_data/synthetic/syn_maze_5p0_s1.npz",
+      "category": "maze",
+      "family": "maze",
+      "param": 5.0,
+      "feasible": true,
+      "start": [
+        2.4,
+        2.4,
+        0.6213
+      ],
+      "goal": [
+        37.6,
+        27.6,
+        0.6213
+      ],
+      "euclid_m": 43.291,
+      "ref_len_3d_m": 51.916,
+      "ref_len_3d_anyangle_m": 49.176,
+      "detour_ratio": 1.199
+    },
+    {
+      "id": "syn_maze_5p0_s1_01",
+      "map": "syn_maze_5p0_s1",
+      "map_path": "map_data/synthetic/syn_maze_5p0_s1.npz",
+      "category": "maze",
+      "family": "maze",
+      "param": 5.0,
+      "feasible": true,
+      "start": [
+        2.4,
+        27.6,
+        -0.6213
+      ],
+      "goal": [
+        37.6,
+        2.4,
+        -0.6213
+      ],
+      "euclid_m": 43.291,
+      "ref_len_3d_m": 78.598,
+      "ref_len_3d_anyangle_m": 76.259,
+      "detour_ratio": 1.816
+    },
+    {
+      "id": "syn_maze_6p0_s0_00",
+      "map": "syn_maze_6p0_s0",
+      "map_path": "map_data/synthetic/syn_maze_6p0_s0.npz",
+      "category": "maze",
+      "family": "maze",
+      "param": 6.0,
+      "feasible": true,
+      "start": [
+        3.0,
+        3.0,
+        0.6747
+      ],
+      "goal": [
+        33.0,
+        27.0,
+        0.6747
+      ],
+      "euclid_m": 38.419,
+      "ref_len_3d_m": 63.899,
+      "ref_len_3d_anyangle_m": 62.578,
+      "detour_ratio": 1.663
+    },
+    {
+      "id": "syn_maze_6p0_s0_01",
+      "map": "syn_maze_6p0_s0",
+      "map_path": "map_data/synthetic/syn_maze_6p0_s0.npz",
+      "category": "maze",
+      "family": "maze",
+      "param": 6.0,
+      "feasible": true,
+      "start": [
+        3.0,
+        27.0,
+        -0.6747
+      ],
+      "goal": [
+        33.0,
+        3.0,
+        -0.6747
+      ],
+      "euclid_m": 38.419,
+      "ref_len_3d_m": 57.628,
+      "ref_len_3d_anyangle_m": 55.469,
+      "detour_ratio": 1.5
+    },
+    {
+      "id": "syn_maze_6p0_s1_00",
+      "map": "syn_maze_6p0_s1",
+      "map_path": "map_data/synthetic/syn_maze_6p0_s1.npz",
+      "category": "maze",
+      "family": "maze",
+      "param": 6.0,
+      "feasible": true,
+      "start": [
+        3.0,
+        3.0,
+        0.6747
+      ],
+      "goal": [
+        33.0,
+        27.0,
+        0.6747
+      ],
+      "euclid_m": 38.419,
+      "ref_len_3d_m": 76.892,
+      "ref_len_3d_anyangle_m": 75.237,
+      "detour_ratio": 2.001
+    },
+    {
+      "id": "syn_maze_6p0_s1_01",
+      "map": "syn_maze_6p0_s1",
+      "map_path": "map_data/synthetic/syn_maze_6p0_s1.npz",
+      "category": "maze",
+      "family": "maze",
+      "param": 6.0,
+      "feasible": true,
+      "start": [
+        3.0,
+        27.0,
+        -0.6747
+      ],
+      "goal": [
+        33.0,
+        3.0,
+        -0.6747
+      ],
+      "euclid_m": 38.419,
+      "ref_len_3d_m": 52.075,
+      "ref_len_3d_anyangle_m": 49.852,
+      "detour_ratio": 1.355
+    },
+    {
+      "id": "syn_boulders_15_s0_00",
+      "map": "syn_boulders_15_s0",
+      "map_path": "map_data/synthetic/syn_boulders_15_s0.npz",
+      "category": "boulders",
+      "family": "boulders",
+      "param": 15,
+      "feasible": true,
+      "start": [
+        4.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        36.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 32.0,
+      "ref_len_3d_m": 32.113,
+      "ref_len_3d_anyangle_m": 32.224,
+      "detour_ratio": 1.004
+    },
+    {
+      "id": "syn_boulders_15_s0_01",
+      "map": "syn_boulders_15_s0",
+      "map_path": "map_data/synthetic/syn_boulders_15_s0.npz",
+      "category": "boulders",
+      "family": "boulders",
+      "param": 15,
+      "feasible": true,
+      "start": [
+        4.0,
+        4.0,
+        0.6023
+      ],
+      "goal": [
+        36.0,
+        26.0,
+        0.6023
+      ],
+      "euclid_m": 38.833,
+      "ref_len_3d_m": 41.137,
+      "ref_len_3d_anyangle_m": 39.104,
+      "detour_ratio": 1.059
+    },
+    {
+      "id": "syn_boulders_15_s0_02",
+      "map": "syn_boulders_15_s0",
+      "map_path": "map_data/synthetic/syn_boulders_15_s0.npz",
+      "category": "boulders",
+      "family": "boulders",
+      "param": 15,
+      "feasible": true,
+      "start": [
+        4.0,
+        26.0,
+        -0.6023
+      ],
+      "goal": [
+        36.0,
+        4.0,
+        -0.6023
+      ],
+      "euclid_m": 38.833,
+      "ref_len_3d_m": 41.152,
+      "ref_len_3d_anyangle_m": 40.277,
+      "detour_ratio": 1.06
+    },
+    {
+      "id": "syn_boulders_15_s1_00",
+      "map": "syn_boulders_15_s1",
+      "map_path": "map_data/synthetic/syn_boulders_15_s1.npz",
+      "category": "boulders",
+      "family": "boulders",
+      "param": 15,
+      "feasible": true,
+      "start": [
+        4.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        36.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 32.0,
+      "ref_len_3d_m": 32.065,
+      "ref_len_3d_anyangle_m": 32.13,
+      "detour_ratio": 1.002
+    },
+    {
+      "id": "syn_boulders_15_s1_01",
+      "map": "syn_boulders_15_s1",
+      "map_path": "map_data/synthetic/syn_boulders_15_s1.npz",
+      "category": "boulders",
+      "family": "boulders",
+      "param": 15,
+      "feasible": true,
+      "start": [
+        4.0,
+        4.0,
+        0.6023
+      ],
+      "goal": [
+        36.0,
+        26.0,
+        0.6023
+      ],
+      "euclid_m": 38.833,
+      "ref_len_3d_m": 41.14,
+      "ref_len_3d_anyangle_m": 39.77,
+      "detour_ratio": 1.059
+    },
+    {
+      "id": "syn_boulders_15_s1_02",
+      "map": "syn_boulders_15_s1",
+      "map_path": "map_data/synthetic/syn_boulders_15_s1.npz",
+      "category": "boulders",
+      "family": "boulders",
+      "param": 15,
+      "feasible": true,
+      "start": [
+        4.0,
+        26.0,
+        -0.6023
+      ],
+      "goal": [
+        36.0,
+        4.0,
+        -0.6023
+      ],
+      "euclid_m": 38.833,
+      "ref_len_3d_m": 41.136,
+      "ref_len_3d_anyangle_m": 39.21,
+      "detour_ratio": 1.059
+    },
+    {
+      "id": "syn_boulders_30_s0_00",
+      "map": "syn_boulders_30_s0",
+      "map_path": "map_data/synthetic/syn_boulders_30_s0.npz",
+      "category": "boulders",
+      "family": "boulders",
+      "param": 30,
+      "feasible": true,
+      "start": [
+        4.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        36.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 32.0,
+      "ref_len_3d_m": 32.542,
+      "ref_len_3d_anyangle_m": 32.483,
+      "detour_ratio": 1.017
+    },
+    {
+      "id": "syn_boulders_30_s0_01",
+      "map": "syn_boulders_30_s0",
+      "map_path": "map_data/synthetic/syn_boulders_30_s0.npz",
+      "category": "boulders",
+      "family": "boulders",
+      "param": 30,
+      "feasible": true,
+      "start": [
+        4.0,
+        4.0,
+        0.6023
+      ],
+      "goal": [
+        36.0,
+        26.0,
+        0.6023
+      ],
+      "euclid_m": 38.833,
+      "ref_len_3d_m": 41.148,
+      "ref_len_3d_anyangle_m": 40.192,
+      "detour_ratio": 1.06
+    },
+    {
+      "id": "syn_boulders_30_s0_02",
+      "map": "syn_boulders_30_s0",
+      "map_path": "map_data/synthetic/syn_boulders_30_s0.npz",
+      "category": "boulders",
+      "family": "boulders",
+      "param": 30,
+      "feasible": true,
+      "start": [
+        4.0,
+        26.0,
+        -0.6023
+      ],
+      "goal": [
+        36.0,
+        4.0,
+        -0.6023
+      ],
+      "euclid_m": 38.833,
+      "ref_len_3d_m": 41.266,
+      "ref_len_3d_anyangle_m": 40.581,
+      "detour_ratio": 1.063
+    },
+    {
+      "id": "syn_boulders_30_s1_00",
+      "map": "syn_boulders_30_s1",
+      "map_path": "map_data/synthetic/syn_boulders_30_s1.npz",
+      "category": "boulders",
+      "family": "boulders",
+      "param": 30,
+      "feasible": true,
+      "start": [
+        4.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        36.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 32.0,
+      "ref_len_3d_m": 32.684,
+      "ref_len_3d_anyangle_m": 32.829,
+      "detour_ratio": 1.021
+    },
+    {
+      "id": "syn_boulders_30_s1_01",
+      "map": "syn_boulders_30_s1",
+      "map_path": "map_data/synthetic/syn_boulders_30_s1.npz",
+      "category": "boulders",
+      "family": "boulders",
+      "param": 30,
+      "feasible": true,
+      "start": [
+        4.0,
+        4.0,
+        0.6023
+      ],
+      "goal": [
+        36.0,
+        26.0,
+        0.6023
+      ],
+      "euclid_m": 38.833,
+      "ref_len_3d_m": 41.162,
+      "ref_len_3d_anyangle_m": 39.516,
+      "detour_ratio": 1.06
+    },
+    {
+      "id": "syn_boulders_30_s1_02",
+      "map": "syn_boulders_30_s1",
+      "map_path": "map_data/synthetic/syn_boulders_30_s1.npz",
+      "category": "boulders",
+      "family": "boulders",
+      "param": 30,
+      "feasible": true,
+      "start": [
+        4.0,
+        26.0,
+        -0.6023
+      ],
+      "goal": [
+        36.0,
+        4.0,
+        -0.6023
+      ],
+      "euclid_m": 38.833,
+      "ref_len_3d_m": 41.147,
+      "ref_len_3d_anyangle_m": 39.538,
+      "detour_ratio": 1.06
+    },
+    {
+      "id": "syn_boulders_50_s0_00",
+      "map": "syn_boulders_50_s0",
+      "map_path": "map_data/synthetic/syn_boulders_50_s0.npz",
+      "category": "boulders",
+      "family": "boulders",
+      "param": 50,
+      "feasible": true,
+      "start": [
+        4.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        36.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 32.0,
+      "ref_len_3d_m": 33.087,
+      "ref_len_3d_anyangle_m": 32.624,
+      "detour_ratio": 1.034
+    },
+    {
+      "id": "syn_boulders_50_s0_01",
+      "map": "syn_boulders_50_s0",
+      "map_path": "map_data/synthetic/syn_boulders_50_s0.npz",
+      "category": "boulders",
+      "family": "boulders",
+      "param": 50,
+      "feasible": true,
+      "start": [
+        4.0,
+        4.0,
+        0.6023
+      ],
+      "goal": [
+        36.0,
+        26.0,
+        0.6023
+      ],
+      "euclid_m": 38.833,
+      "ref_len_3d_m": 42.16,
+      "ref_len_3d_anyangle_m": 40.931,
+      "detour_ratio": 1.086
+    },
+    {
+      "id": "syn_boulders_50_s0_02",
+      "map": "syn_boulders_50_s0",
+      "map_path": "map_data/synthetic/syn_boulders_50_s0.npz",
+      "category": "boulders",
+      "family": "boulders",
+      "param": 50,
+      "feasible": true,
+      "start": [
+        4.0,
+        26.0,
+        -0.6023
+      ],
+      "goal": [
+        36.0,
+        4.0,
+        -0.6023
+      ],
+      "euclid_m": 38.833,
+      "ref_len_3d_m": 41.16,
+      "ref_len_3d_anyangle_m": 39.383,
+      "detour_ratio": 1.06
+    },
+    {
+      "id": "syn_boulders_50_s1_00",
+      "map": "syn_boulders_50_s1",
+      "map_path": "map_data/synthetic/syn_boulders_50_s1.npz",
+      "category": "boulders",
+      "family": "boulders",
+      "param": 50,
+      "feasible": true,
+      "start": [
+        4.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        36.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 32.0,
+      "ref_len_3d_m": 34.201,
+      "ref_len_3d_anyangle_m": 33.147,
+      "detour_ratio": 1.069
+    },
+    {
+      "id": "syn_boulders_50_s1_01",
+      "map": "syn_boulders_50_s1",
+      "map_path": "map_data/synthetic/syn_boulders_50_s1.npz",
+      "category": "boulders",
+      "family": "boulders",
+      "param": 50,
+      "feasible": true,
+      "start": [
+        4.0,
+        4.0,
+        0.6023
+      ],
+      "goal": [
+        36.0,
+        26.0,
+        0.6023
+      ],
+      "euclid_m": 38.833,
+      "ref_len_3d_m": 41.648,
+      "ref_len_3d_anyangle_m": 40.921,
+      "detour_ratio": 1.072
+    },
+    {
+      "id": "syn_boulders_50_s1_02",
+      "map": "syn_boulders_50_s1",
+      "map_path": "map_data/synthetic/syn_boulders_50_s1.npz",
+      "category": "boulders",
+      "family": "boulders",
+      "param": 50,
+      "feasible": true,
+      "start": [
+        4.0,
+        26.0,
+        -0.6023
+      ],
+      "goal": [
+        36.0,
+        4.0,
+        -0.6023
+      ],
+      "euclid_m": 38.833,
+      "ref_len_3d_m": 41.19,
+      "ref_len_3d_anyangle_m": 40.436,
+      "detour_ratio": 1.061
+    },
+    {
+      "id": "syn_boulders_dense_80_s0_00",
+      "map": "syn_boulders_dense_80_s0",
+      "map_path": "map_data/synthetic/syn_boulders_dense_80_s0.npz",
+      "category": "boulders_dense",
+      "family": "boulders_dense",
+      "param": 80,
+      "feasible": true,
+      "start": [
+        3.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        37.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 34.0,
+      "ref_len_3d_m": 35.755,
+      "ref_len_3d_anyangle_m": 34.823,
+      "detour_ratio": 1.052
+    },
+    {
+      "id": "syn_boulders_dense_80_s0_01",
+      "map": "syn_boulders_dense_80_s0",
+      "map_path": "map_data/synthetic/syn_boulders_dense_80_s0.npz",
+      "category": "boulders_dense",
+      "family": "boulders_dense",
+      "param": 80,
+      "feasible": true,
+      "start": [
+        3.0,
+        5.0,
+        0.5317
+      ],
+      "goal": [
+        37.0,
+        25.0,
+        0.5317
+      ],
+      "euclid_m": 39.446,
+      "ref_len_3d_m": 42.544,
+      "ref_len_3d_anyangle_m": 41.976,
+      "detour_ratio": 1.079
+    },
+    {
+      "id": "syn_boulders_dense_80_s0_02",
+      "map": "syn_boulders_dense_80_s0",
+      "map_path": "map_data/synthetic/syn_boulders_dense_80_s0.npz",
+      "category": "boulders_dense",
+      "family": "boulders_dense",
+      "param": 80,
+      "feasible": true,
+      "start": [
+        3.0,
+        25.0,
+        -0.5317
+      ],
+      "goal": [
+        37.0,
+        5.0,
+        -0.5317
+      ],
+      "euclid_m": 39.446,
+      "ref_len_3d_m": 42.776,
+      "ref_len_3d_anyangle_m": 40.623,
+      "detour_ratio": 1.084
+    },
+    {
+      "id": "syn_boulders_dense_80_s1_00",
+      "map": "syn_boulders_dense_80_s1",
+      "map_path": "map_data/synthetic/syn_boulders_dense_80_s1.npz",
+      "category": "boulders_dense",
+      "family": "boulders_dense",
+      "param": 80,
+      "feasible": true,
+      "start": [
+        3.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        37.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 34.0,
+      "ref_len_3d_m": 34.186,
+      "ref_len_3d_anyangle_m": 34.048,
+      "detour_ratio": 1.005
+    },
+    {
+      "id": "syn_boulders_dense_80_s1_01",
+      "map": "syn_boulders_dense_80_s1",
+      "map_path": "map_data/synthetic/syn_boulders_dense_80_s1.npz",
+      "category": "boulders_dense",
+      "family": "boulders_dense",
+      "param": 80,
+      "feasible": true,
+      "start": [
+        3.0,
+        5.0,
+        0.5317
+      ],
+      "goal": [
+        37.0,
+        25.0,
+        0.5317
+      ],
+      "euclid_m": 39.446,
+      "ref_len_3d_m": 42.299,
+      "ref_len_3d_anyangle_m": 40.758,
+      "detour_ratio": 1.072
+    },
+    {
+      "id": "syn_boulders_dense_80_s1_02",
+      "map": "syn_boulders_dense_80_s1",
+      "map_path": "map_data/synthetic/syn_boulders_dense_80_s1.npz",
+      "category": "boulders_dense",
+      "family": "boulders_dense",
+      "param": 80,
+      "feasible": true,
+      "start": [
+        3.0,
+        25.0,
+        -0.5317
+      ],
+      "goal": [
+        37.0,
+        5.0,
+        -0.5317
+      ],
+      "euclid_m": 39.446,
+      "ref_len_3d_m": 42.336,
+      "ref_len_3d_anyangle_m": 40.908,
+      "detour_ratio": 1.073
+    },
+    {
+      "id": "syn_boulders_dense_120_s0_00",
+      "map": "syn_boulders_dense_120_s0",
+      "map_path": "map_data/synthetic/syn_boulders_dense_120_s0.npz",
+      "category": "boulders_dense",
+      "family": "boulders_dense",
+      "param": 120,
+      "feasible": true,
+      "start": [
+        3.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        37.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 34.0,
+      "ref_len_3d_m": 36.001,
+      "ref_len_3d_anyangle_m": 34.451,
+      "detour_ratio": 1.059
+    },
+    {
+      "id": "syn_boulders_dense_120_s0_01",
+      "map": "syn_boulders_dense_120_s0",
+      "map_path": "map_data/synthetic/syn_boulders_dense_120_s0.npz",
+      "category": "boulders_dense",
+      "family": "boulders_dense",
+      "param": 120,
+      "feasible": true,
+      "start": [
+        3.0,
+        5.0,
+        0.5317
+      ],
+      "goal": [
+        37.0,
+        25.0,
+        0.5317
+      ],
+      "euclid_m": 39.446,
+      "ref_len_3d_m": 42.473,
+      "ref_len_3d_anyangle_m": 41.206,
+      "detour_ratio": 1.077
+    },
+    {
+      "id": "syn_boulders_dense_120_s0_02",
+      "map": "syn_boulders_dense_120_s0",
+      "map_path": "map_data/synthetic/syn_boulders_dense_120_s0.npz",
+      "category": "boulders_dense",
+      "family": "boulders_dense",
+      "param": 120,
+      "feasible": true,
+      "start": [
+        3.0,
+        25.0,
+        -0.5317
+      ],
+      "goal": [
+        37.0,
+        5.0,
+        -0.5317
+      ],
+      "euclid_m": 39.446,
+      "ref_len_3d_m": 42.475,
+      "ref_len_3d_anyangle_m": 41.43,
+      "detour_ratio": 1.077
+    },
+    {
+      "id": "syn_boulders_dense_120_s1_00",
+      "map": "syn_boulders_dense_120_s1",
+      "map_path": "map_data/synthetic/syn_boulders_dense_120_s1.npz",
+      "category": "boulders_dense",
+      "family": "boulders_dense",
+      "param": 120,
+      "feasible": true,
+      "start": [
+        3.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        37.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 34.0,
+      "ref_len_3d_m": 35.533,
+      "ref_len_3d_anyangle_m": 34.806,
+      "detour_ratio": 1.045
+    },
+    {
+      "id": "syn_boulders_dense_120_s1_01",
+      "map": "syn_boulders_dense_120_s1",
+      "map_path": "map_data/synthetic/syn_boulders_dense_120_s1.npz",
+      "category": "boulders_dense",
+      "family": "boulders_dense",
+      "param": 120,
+      "feasible": true,
+      "start": [
+        3.0,
+        5.0,
+        0.5317
+      ],
+      "goal": [
+        37.0,
+        25.0,
+        0.5317
+      ],
+      "euclid_m": 39.446,
+      "ref_len_3d_m": 43.269,
+      "ref_len_3d_anyangle_m": 41.819,
+      "detour_ratio": 1.097
+    },
+    {
+      "id": "syn_boulders_dense_120_s1_02",
+      "map": "syn_boulders_dense_120_s1",
+      "map_path": "map_data/synthetic/syn_boulders_dense_120_s1.npz",
+      "category": "boulders_dense",
+      "family": "boulders_dense",
+      "param": 120,
+      "feasible": true,
+      "start": [
+        3.0,
+        25.0,
+        -0.5317
+      ],
+      "goal": [
+        37.0,
+        5.0,
+        -0.5317
+      ],
+      "euclid_m": 39.446,
+      "ref_len_3d_m": 43.168,
+      "ref_len_3d_anyangle_m": 41.793,
+      "detour_ratio": 1.094
+    },
+    {
+      "id": "syn_boulders_dense_160_s0_00",
+      "map": "syn_boulders_dense_160_s0",
+      "map_path": "map_data/synthetic/syn_boulders_dense_160_s0.npz",
+      "category": "boulders_dense",
+      "family": "boulders_dense",
+      "param": 160,
+      "feasible": true,
+      "start": [
+        3.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        37.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 34.0,
+      "ref_len_3d_m": 36.012,
+      "ref_len_3d_anyangle_m": 35.82,
+      "detour_ratio": 1.059
+    },
+    {
+      "id": "syn_boulders_dense_160_s0_01",
+      "map": "syn_boulders_dense_160_s0",
+      "map_path": "map_data/synthetic/syn_boulders_dense_160_s0.npz",
+      "category": "boulders_dense",
+      "family": "boulders_dense",
+      "param": 160,
+      "feasible": true,
+      "start": [
+        3.0,
+        5.0,
+        0.5317
+      ],
+      "goal": [
+        37.0,
+        25.0,
+        0.5317
+      ],
+      "euclid_m": 39.446,
+      "ref_len_3d_m": 44.768,
+      "ref_len_3d_anyangle_m": 43.89,
+      "detour_ratio": 1.135
+    },
+    {
+      "id": "syn_boulders_dense_160_s0_02",
+      "map": "syn_boulders_dense_160_s0",
+      "map_path": "map_data/synthetic/syn_boulders_dense_160_s0.npz",
+      "category": "boulders_dense",
+      "family": "boulders_dense",
+      "param": 160,
+      "feasible": true,
+      "start": [
+        3.0,
+        25.0,
+        -0.5317
+      ],
+      "goal": [
+        37.0,
+        5.0,
+        -0.5317
+      ],
+      "euclid_m": 39.446,
+      "ref_len_3d_m": 44.223,
+      "ref_len_3d_anyangle_m": 42.313,
+      "detour_ratio": 1.121
+    },
+    {
+      "id": "syn_boulders_dense_160_s1_00",
+      "map": "syn_boulders_dense_160_s1",
+      "map_path": "map_data/synthetic/syn_boulders_dense_160_s1.npz",
+      "category": "boulders_dense",
+      "family": "boulders_dense",
+      "param": 160,
+      "feasible": true,
+      "start": [
+        3.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        37.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 34.0,
+      "ref_len_3d_m": 37.549,
+      "ref_len_3d_anyangle_m": 36.104,
+      "detour_ratio": 1.104
+    },
+    {
+      "id": "syn_boulders_dense_160_s1_01",
+      "map": "syn_boulders_dense_160_s1",
+      "map_path": "map_data/synthetic/syn_boulders_dense_160_s1.npz",
+      "category": "boulders_dense",
+      "family": "boulders_dense",
+      "param": 160,
+      "feasible": true,
+      "start": [
+        3.0,
+        5.0,
+        0.5317
+      ],
+      "goal": [
+        37.0,
+        25.0,
+        0.5317
+      ],
+      "euclid_m": 39.446,
+      "ref_len_3d_m": 43.799,
+      "ref_len_3d_anyangle_m": 42.42,
+      "detour_ratio": 1.11
+    },
+    {
+      "id": "syn_boulders_dense_160_s1_02",
+      "map": "syn_boulders_dense_160_s1",
+      "map_path": "map_data/synthetic/syn_boulders_dense_160_s1.npz",
+      "category": "boulders_dense",
+      "family": "boulders_dense",
+      "param": 160,
+      "feasible": true,
+      "start": [
+        3.0,
+        25.0,
+        -0.5317
+      ],
+      "goal": [
+        37.0,
+        5.0,
+        -0.5317
+      ],
+      "euclid_m": 39.446,
+      "ref_len_3d_m": 42.452,
+      "ref_len_3d_anyangle_m": 40.715,
+      "detour_ratio": 1.076
+    },
+    {
+      "id": "syn_blocked_0_s0_00",
+      "map": "syn_blocked_0_s0",
+      "map_path": "map_data/synthetic/syn_blocked_0_s0.npz",
+      "category": "blocked",
+      "family": "blocked",
+      "param": 0,
+      "feasible": false,
+      "start": [
+        6.0,
+        15.0,
+        0.0
+      ],
+      "goal": [
+        34.0,
+        15.0,
+        0.0
+      ],
+      "euclid_m": 28.0,
+      "ref_len_3d_m": null,
+      "ref_len_3d_anyangle_m": null,
+      "detour_ratio": null
+    },
+    {
+      "id": "syn_blocked_0_s0_01",
+      "map": "syn_blocked_0_s0",
+      "map_path": "map_data/synthetic/syn_blocked_0_s0.npz",
+      "category": "blocked",
+      "family": "blocked",
+      "param": 0,
+      "feasible": false,
+      "start": [
+        6.0,
+        5.0,
+        0.6202
+      ],
+      "goal": [
+        34.0,
+        25.0,
+        0.6202
+      ],
+      "euclid_m": 34.409,
+      "ref_len_3d_m": null,
+      "ref_len_3d_anyangle_m": null,
+      "detour_ratio": null
+    }
+  ]
+}

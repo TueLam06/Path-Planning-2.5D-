@@ -167,7 +167,7 @@ def step_report(args, run_dir, stage_info, t_start, log):
     by_case = {}
     for r in results:
         by_case.setdefault(r["case_id"], []).append(r)
-    hardest = sorted(by_case.items(), key=lambda kv: -sum(not x["valid"] for x in kv[1]))[:10]
+    hardest = sorted(by_case.items(), key=lambda kv: -sum(not x.get("correct", x["valid"]) for x in kv[1]))[:10]
     false_succ = [r for r in results if r["false_success"]]
 
     maps = tc.get("maps", [])
@@ -207,18 +207,18 @@ def step_report(args, run_dir, stage_info, t_start, log):
     L += ["## 4. Cảnh báo", ""]
     L.append(f"- ⚠️ **{len(false_succ)} lần báo success sai** — planner có lỗi kiểm tra va chạm!" if false_succ
              else "- ✅ Không có lần báo success sai.")
-    all_valid = all(r["valid_rate"] >= 0.99 for r in rows)
+    all_valid = all(r["valid_rate"] is None or r["valid_rate"] >= 0.99 for r in rows)
     if all_valid:
         L.append("- ⚠️ Mọi planner đạt ≥ 99%: bộ test **quá dễ**, không phân biệt được planner "
                  "(cần case khó hơn / bản đồ đa dạng hơn).")
     L += ["", "## 5. 10 case khó nhất", "", "| Case | Nhóm | Ref (m) | Số job thất bại | Planner thất bại |", "|---|---|---|---|---|"]
-    if not hardest or all(x["valid"] for x in hardest[0][1]):
+    if not hardest or all(x.get("correct", x["valid"]) for x in hardest[0][1]):
         L.append("| (không có case nào thất bại) | | | | |")
     for cid, rs in hardest:
-        fails = [f"{x['planner']} ({x['mode']})" for x in rs if not x["valid"]]
+        fails = [f"{x['planner']} ({x['mode']})" for x in rs if not x.get("correct", x["valid"])]
         if not fails:
             break
-        L.append(f"| {cid} | {rs[0]['category']} | {rs[0]['ref_len_3d']:.1f} | {len(fails)}/{len(rs)} | {', '.join(fails)} |")
+        L.append(f"| {cid} | {rs[0]['category']} | {_num(rs[0]['ref_len_3d'], '{:.1f}')} | {len(fails)}/{len(rs)} | {', '.join(fails)} |")
     L += ["", "## 6. File", "",
           "- `summary_table.tex`: bảng LaTeX dán vào báo cáo",
           "- `results.csv`: từng lần chạy (mở bằng Excel)",

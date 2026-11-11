@@ -64,16 +64,20 @@ def run_job(job):
     v = verify_path(path, start, goal, data, use_sem, goal_tol)
     collision_free = v["collision_samples"] == 0
     valid = bool(success) and v["reached"] and collision_free
-    ref = case.get("ref_len_3d_anyangle_m") or case["ref_len_3d_m"]
+    ref = case.get("ref_len_3d_anyangle_m") or case.get("ref_len_3d_m")
+    feasible = case.get("feasible", True)
     rec = {
         "case_id": case["id"], "map": case["map"], "category": case["category"],
         "planner": planner_name, "mode": mode, "run": run_idx, "seed": seed,
+        "feasible": feasible,
         "reported_success": bool(success), "reached": v["reached"],
         "collision_free": collision_free, "valid": valid,
+        # Case âm (không có đường): đúng khi planner báo thất bại
+        "correct": valid if feasible else not success,
         "false_success": bool(success) and not valid,
         "planning_time_sec": m["planning_time_sec"],
         "path_length_3d": m["path_length_3d"], "ref_len_3d": ref,
-        "optimality_ratio": (m["path_length_3d"] / ref) if valid and ref > 0 else None,
+        "optimality_ratio": (m["path_length_3d"] / ref) if valid and ref else None,
         "max_roll_deg": v["max_roll_fp_deg"], "max_pitch_deg": v["max_pitch_fp_deg"],
         "max_roll_reported_deg": m["max_roll_deg"], "max_pitch_reported_deg": m["max_pitch_deg"],
         "mean_traversability": m["mean_traversability"],
@@ -105,9 +109,12 @@ def summarize(records, categories):
             if not rs:
                 continue
             ok = [r for r in rs if r["valid"]]
+            feas = [r for r in rs if r.get("feasible", True)]
+            neg = [r for r in rs if not r.get("feasible", True)]
             row = {
-                "mode": mode, "planner": p, "n": len(rs),
-                "valid_rate": len(ok) / len(rs),
+                "mode": mode, "planner": p, "n": len(rs), "n_infeasible": len(neg),
+                "valid_rate": (sum(r["valid"] for r in feas) / len(feas)) if feas else None,
+                "reject_rate": (sum(r["correct"] for r in neg) / len(neg)) if neg else None,
                 "reported_success_rate": sum(r["reported_success"] for r in rs) / len(rs),
                 "false_success": sum(r["false_success"] for r in rs),
                 "crashes": sum(r["error"] is not None for r in rs),
@@ -120,7 +127,7 @@ def summarize(records, categories):
                 "mean_costmap": _mean([r["mean_costmap"] for r in ok]),
             }
             for c in categories:
-                rc = [r for r in rs if r["category"] == c]
+                rc = [r for r in rs if r["category"] == c and r.get("feasible", True)]
                 row[f"valid_rate_{c}"] = (sum(r["valid"] for r in rc) / len(rc)) if rc else None
             out.append(row)
     return out
@@ -147,16 +154,18 @@ def write_reports(out_dir, records, summary, categories, meta):
         "",
         f"- Test case: {meta['n_cases']} trên {meta['n_maps']} bản đồ | chế độ: {', '.join(meta['modes'])} "
         f"| {meta['runs']} lần/case | goal_tol {meta['goal_tol']} m | workers {meta['workers']}",
-        "- **Valid** = planner báo thành công VÀ điểm cuối tới đích VÀ không cắt ô vật cản (kiểm chứng độc lập).",
-        "- **Opt. ratio** = độ dài 3D / đường tham chiếu Dijkstra trên lưới (chỉ tính case valid).",
+        "- **Valid** = planner báo thành công VÀ điểm cuối tới đích VÀ không cắt ô vật cản (kiểm chứng độc lập), tính trên case có đường.",
+        "- **Từ chối đúng** = tỷ lệ planner báo thất bại trên case âm (không có đường).",
+        "- **Opt. ratio** = độ dài 3D / đường tham chiếu any-angle (chỉ tính case valid).",
         "",
-        f"| Mode | Planner | N | Valid | Báo success | False success | Time TB (s) | Opt. ratio | Max roll TB (°) | Vượt roll | {cat_hdr} |",
-        "|" + "---|" * (10 + len(categories)),
+        f"| Mode | Planner | N | Valid | Từ chối đúng | Báo success | False success | Time TB (s) | Opt. ratio | Max roll TB (°) | Vượt roll | {cat_hdr} |",
+        "|" + "---|" * (11 + len(categories)),
     ]
     for r in summary:
         cats = " | ".join(_f(r[f"valid_rate_{c}"], "{:.0%}") for c in categories)
         lines.append(
-            f"| {r['mode']} | {r['planner']} | {r['n']} | {r['valid_rate']:.0%} | "
+            f"| {r['mode']} | {r['planner']} | {r['n']} | {_f(r['valid_rate'], '{:.0%}')} | "
+            f"{_f(r.get('reject_rate'), '{:.0%}')} | "
             f"{r['reported_success_rate']:.0%} | {r['false_success']} | {_f(r['mean_time_s'], '{:.3f}')} | "
             f"{_f(r['mean_opt_ratio'])} | {_f(r['mean_max_roll_deg'], '{:.1f}')} | "
             f"{_f(r['roll_violation_rate'], '{:.0%}')} | {cats} |"
@@ -178,7 +187,7 @@ def write_reports(out_dir, records, summary, categories, meta):
     for r in summary:
         tex.append(
             f"{'Sem+Geo' if r['mode'] == 'sem' else 'Geo-only'} & {r['planner'].replace('*', '$^*$')} & "
-            f"{100 * r['valid_rate']:.1f} & {r['false_success']} & {_f(r['mean_time_s'], '{:.3f}')} & "
+            f"{_f(None if r['valid_rate'] is None else 100 * r['valid_rate'], '{:.1f}')} & {r['false_success']} & {_f(r['mean_time_s'], '{:.3f}')} & "
             f"{_f(r['mean_opt_ratio'])} & {_f(r['mean_max_roll_deg'], '{:.1f}')} \\\\"
         )
     tex += ["\\hline", "\\end{tabular}", "\\end{table}"]
@@ -268,11 +277,11 @@ def main():
         records.append(rec)
         partial.write(json.dumps(rec, ensure_ascii=False) + "\n")
         partial.flush()
-        flag = "OK " if rec["valid"] else ("FS!" if rec["false_success"] else "-- ")
+        flag = "OK " if rec.get("correct", rec["valid"]) else ("FS!" if rec["false_success"] else "-- ")
         eta = (time.time() - t0) / k * (n_total - k)
         print(f"  [{k:>5}/{n_total}] {flag} {rec['case_id']:<30} {rec['mode']:<3} {rec['planner']:<14} "
               f"{rec['planning_time_sec']:6.2f}s  L={rec['path_length_3d']:6.2f}m "
-              f"(ref {rec['ref_len_3d']:.2f})  ETA {eta / 60:5.1f} phút"
+              f"(ref {_f(rec['ref_len_3d'])})  ETA {eta / 60:5.1f} phút"
               + (f"  ERR {rec['error']}" if rec["error"] else ""),
               flush=True)
 
