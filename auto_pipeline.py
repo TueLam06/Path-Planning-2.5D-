@@ -22,6 +22,8 @@ import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+import numpy as np
+
 for _s in (sys.stdout, sys.stderr):
     try:
         _s.reconfigure(encoding="utf-8")
@@ -100,10 +102,18 @@ def step_maps(args, maps_dir, log):
         except Exception as exc:
             log(f"  [BỎ QUA] sequence {seq}: {exc}")
             continue
-        picked = ids[:: args.stride]
+        poses = load_poses(args.poses_dir, seq, len(ids)) if args.min_move else None
+        if poses is not None:
+            picked = [ids[i] for i in select_by_motion(poses, args.min_move, args.min_turn)]
+            how = f"đi >= {args.min_move} m hoặc quay >= {args.min_turn}°"
+        else:
+            if args.min_move:
+                log(f"  [CẢNH BÁO] không đọc được poses.txt của {seq}, dùng --stride")
+            picked = ids[:: args.stride]
+            how = f"stride {args.stride}"
         if args.max_frames_per_seq:
             picked = picked[: args.max_frames_per_seq]
-        log(f"  sequence {seq}: {len(ids)} frame -> lấy {len(picked)} (stride {args.stride})")
+        log(f"  sequence {seq}: {len(ids)} frame -> lấy {len(picked)} ({how})")
         plan += [(seq, f) for f in picked]
     if not plan:
         raise RuntimeError("Không tìm thấy frame nào. Kiểm tra --data-dir / raw_data/.")
@@ -130,12 +140,80 @@ def step_maps(args, maps_dir, log):
             if k % 25 == 0 or k == len(plan):
                 log(f"  bản đồ {k}/{len(plan)} (mới {n_new}, có sẵn {n_skip}, lỗi {n_err}) "
                     f"{time.time() - t0:.0f}s")
+    map_files = sorted(map_files)
+    n_before = len(map_files)
+    if args.dedup:
+        map_files = dedup_maps(map_files, args.dedup_z, args.dedup_sem)
+        log(f"  lọc trùng nội dung: {n_before} -> {len(map_files)} bản đồ "
+            f"(ngưỡng độ cao {args.dedup_z} m, nhãn {args.dedup_sem})")
     # Danh sách bản đồ của riêng lần chạy này
     with open(maps_list_path(args), "w", encoding="utf-8") as f:
-        f.write("\n".join(sorted(map_files)) + "\n")
+        f.write("\n".join(map_files) + "\n")
     if args.method == "group1" and len(set(os.path.basename(p) for p in map_files)) < len(map_files):
         log("  [CẢNH BÁO] group1 đặt tên file theo frame, các sequence khác nhau sẽ ghi đè nhau.")
-    return {"frames_planned": len(plan), "maps_new": n_new, "maps_existing": n_skip, "map_errors": n_err}
+    return {"frames_planned": len(plan), "maps_new": n_new, "maps_existing": n_skip, "map_errors": n_err,
+            "maps_after_dedup": len(map_files)}
+
+
+def load_poses(poses_dir, seq, n_frames):
+    """Đọc poses.txt (KITTI: 12 số/dòng, ma trận 3x4) của sequence. Trả về mảng (N, 3, 4) hoặc None."""
+    roots = [poses_dir] if poses_dir else []
+    roots += [os.path.join(GEN_DIR, "raw_data")]
+    for root in roots:
+        for p in glob.glob(os.path.join(root, "**", seq, "poses.txt"), recursive=True):
+            m = np.loadtxt(p).reshape(-1, 3, 4)
+            if len(m) == n_frames:
+                return m
+    return None
+
+
+def select_by_motion(poses, min_move, min_turn_deg):
+    """Chỉ giữ frame khi xe đã đi >= min_move (m) hoặc quay >= min_turn_deg so với frame giữ gần nhất."""
+    keep = [0]
+    last = poses[0]
+    for i in range(1, len(poses)):
+        moved = np.linalg.norm(poses[i][:, 3] - last[:, 3])
+        cos_t = np.clip((np.trace(last[:, :3].T @ poses[i][:, :3]) - 1) / 2, -1, 1)
+        if moved >= min_move or np.degrees(np.arccos(cos_t)) >= min_turn_deg:
+            keep.append(i)
+            last = poses[i]
+    return keep
+
+
+def _map_fingerprint(path, block=10):
+    """Vân tay thô của bản đồ: độ cao trung bình từng khối block x block ô (trừ trung vị) + tỷ lệ nhãn."""
+    d = np.load(path)
+    z = np.asarray(d["elevation"], dtype=float)
+    h, w = (z.shape[0] // block) * block, (z.shape[1] // block) * block
+    zb = z[:h, :w].reshape(h // block, block, w // block, block).mean(axis=(1, 3))
+    zb -= np.median(zb)
+    hist = None
+    if "semantic" in d:
+        hist = np.bincount(np.asarray(d["semantic"]).ravel().astype(int), minlength=64)[:64].astype(float)
+        hist[0] = 0.0  # bỏ void: frame gán nhãn thiếu không được coi là cảnh khác
+        hist = hist / hist.sum() if hist.sum() > 0 else None
+    return zb, hist
+
+
+def dedup_maps(paths, z_thresh, sem_thresh, window=20):
+    """Bỏ bản đồ gần giống một trong `window` bản đồ giữ gần nhất (RMSE độ cao khối và L1 tỷ lệ nhãn)."""
+    kept, prints = [], []
+    for p in paths:
+        zb, hist = _map_fingerprint(p)
+        dup = False
+        for zk, hk in prints[-window:]:
+            if zk.shape != zb.shape:
+                continue
+            same_z = np.sqrt(np.mean((zk - zb) ** 2)) < z_thresh
+            same_s = (not sem_thresh or hist is None or hk is None
+                      or np.abs(hk - hist).sum() < sem_thresh)
+            if same_z and same_s:
+                dup = True
+                break
+        if not dup:
+            kept.append(p)
+            prints.append((zb, hist))
+    return kept
 
 
 def maps_list_path(args):
@@ -252,6 +330,14 @@ def main():
     ap.add_argument("--download-sample", action="store_true", help="Tải bộ mẫu 8 frame (24 MB) nếu chưa có")
     ap.add_argument("--seqs", nargs="+", default=["00000", "00001", "00002", "00003", "00004"])
     ap.add_argument("--stride", type=int, default=50, help="Lấy 1 frame mỗi N frame (50 = 5 giây)")
+    ap.add_argument("--min-move", type=float, default=0.0,
+                    help="Chọn frame theo pose: giữ khi xe đi >= N m (cần poses.txt; 0 = dùng --stride)")
+    ap.add_argument("--min-turn", type=float, default=30.0, help="... hoặc quay >= N độ")
+    ap.add_argument("--poses-dir", default=None, help="Thư mục chứa <seq>/poses.txt (mặc định tìm trong raw_data/)")
+    ap.add_argument("--dedup", action="store_true", help="Bỏ bản đồ gần giống nhau về nội dung")
+    ap.add_argument("--dedup-z", type=float, default=0.15, help="Ngưỡng RMSE độ cao khối 2 m (m)")
+    ap.add_argument("--dedup-sem", type=float, default=0.0,
+                    help="Ngưỡng L1 tỷ lệ nhãn (0 = chỉ so độ cao; nhãn lấp lỗ EDT không ổn định)")
     ap.add_argument("--max-frames-per-seq", type=int, default=None)
     ap.add_argument("--method", default="jikay", choices=["jikay", "group1"])
     ap.add_argument("--maps-dir", default=None,
@@ -289,7 +375,7 @@ def main():
             t = time.time()
             s = step_maps(args, maps_dir, log)
             info["maps"] = (f"{s['frames_planned']} frame → mới {s['maps_new']}, có sẵn {s['maps_existing']}, "
-                            f"lỗi {s['map_errors']} ({time.time() - t:.0f} s)")
+                            f"lỗi {s['map_errors']}, sau lọc trùng {s['maps_after_dedup']} ({time.time() - t:.0f} s)")
 
         step = "cases"
         set_status(run_dir, "running", step)
