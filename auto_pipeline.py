@@ -357,7 +357,7 @@ def main():
     run_dir = os.path.join(LOG_ROOT, args.name)
     os.makedirs(run_dir, exist_ok=True)
     log = Logger(os.path.join(run_dir, "pipeline.log"))
-    maps_dir = args.maps_dir or os.path.join(GEN_DIR, "output_auto", args.method)
+    maps_dir = os.path.abspath(args.maps_dir) if args.maps_dir else os.path.join(GEN_DIR, "output_auto", args.method)
     cases_path = os.path.join(run_dir, "testcases.json")
     py = sys.executable
     t_start = time.time()
