@@ -43,6 +43,27 @@ class LazyPRMStar25D:
                 return x, y, yaw
         return None
 
+    @staticmethod
+    def _edge_points(n1, n2, spacing=0.25):
+        """Các điểm xuất ra dọc cạnh n1 -> n2 (gồm cả 2 đầu), giống hệt lúc dựng đường đi."""
+        d2 = np.hypot(n2.x - n1.x, n2.y - n1.y)
+        steps = max(int(np.ceil(d2 / spacing)), 1)
+        pts = []
+        for s in range(steps):
+            alpha = s / float(steps)
+            pts.append(((1.0 - alpha) * n1.x + alpha * n2.x, (1.0 - alpha) * n1.y + alpha * n2.y))
+        pts.append((n2.x, n2.y))
+        return pts
+
+    def _output_segments_free(self, n1, n2):
+        """Kiểm tra đúng các đoạn sẽ xuất ra (cả 2 chiều đi của cạnh) để khớp bộ kiểm chứng."""
+        for a, b in ((n1, n2), (n2, n1)):
+            pts = self._edge_points(a, b)
+            for (x1, y1), (x2, y2) in zip(pts[:-1], pts[1:]):
+                if not self.map.is_segment_free(x1, y1, x2, y2):
+                    return False
+        return True
+
     def _eval_edge(self, n1, n2):
         """
         Fast vectorized collision & terrain slope check along edge (n1 -> n2).
@@ -63,7 +84,7 @@ class LazyPRMStar25D:
         iys = np.clip(np.round(pts_y / self.map.resolution).astype(int), 0, self.map.ny - 1)
 
         # 1. 2D Occupancy check along entire continuous segment
-        if np.any(self.map.occupancy_2d[iys, ixs]) or not self.map.is_segment_free(n1.x, n1.y, n2.x, n2.y):
+        if np.any(self.map.occupancy_2d[iys, ixs]) or not self._output_segments_free(n1, n2):
             self.edge_cache[key] = (float('inf'), False)
             return float('inf'), False
 
@@ -187,14 +208,9 @@ class LazyPRMStar25D:
         for k in range(len(candidate_indices) - 1):
             n1 = self.nodes[candidate_indices[k]]
             n2 = self.nodes[candidate_indices[k + 1]]
-            d2 = np.hypot(n2.x - n1.x, n2.y - n1.y)
-            steps = max(int(np.ceil(d2 / 0.25)), 1)
             yaw_seg = np.arctan2(n2.y - n1.y, n2.x - n1.x)
 
-            for s in range(steps):
-                alpha = s / float(steps)
-                wx = (1.0 - alpha) * n1.x + alpha * n2.x
-                wy = (1.0 - alpha) * n1.y + alpha * n2.y
+            for wx, wy in self._edge_points(n1, n2)[:-1]:
                 wz = self.map.get_elevation(wx, wy)
                 roll, pitch, _ = self.map.project_footprint_3point(wx, wy, yaw_seg)
                 tau = self.map.compute_dynamic_traversability(wx, wy, yaw_seg)

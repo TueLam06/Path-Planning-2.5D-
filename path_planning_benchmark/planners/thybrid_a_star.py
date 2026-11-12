@@ -208,13 +208,16 @@ class THybridAStar:
         """Attempts a straight analytical step connection from current node to goal pose."""
         dist = np.hypot(gx - current.x, gy - current.y)
         n_steps = max(int(np.ceil(dist / step_check)), 1)
-        if not self.map.is_segment_free(current.x, current.y, gx, gy):
-            return None
-
         dyaw = (gyaw - current.yaw + np.pi) % (2 * np.pi) - np.pi
         ts = np.arange(1, n_steps + 1) / n_steps
         cxs = (1 - ts) * current.x + ts * gx
         cys = (1 - ts) * current.y + ts * gy
+        # Kiểm tra đúng từng đoạn sẽ xuất ra (khớp cách lấy mẫu của bộ kiểm chứng)
+        px, py = current.x, current.y
+        for cx, cy in zip(cxs, cys):
+            if not self.map.is_segment_free(px, py, cx, cy):
+                return None
+            px, py = cx, cy
         cyaws = (current.yaw + ts * dyaw + np.pi) % (2 * np.pi) - np.pi
         if not np.all(self.map.poses_stable(cxs, cys, cyaws)):
             return None
