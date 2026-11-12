@@ -28,3 +28,6 @@ Thumbs.db
 
 # Bản đồ tổng hợp (sinh lại bằng generate_synthetic_suite.py)
 path_planning_benchmark/map_data/synthetic/
+
+# Bản đồ RELLIS sinh từ pipeline Jikay71 (--out out_<seq>)
+out_*/
