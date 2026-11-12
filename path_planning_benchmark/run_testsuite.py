@@ -43,8 +43,9 @@ def _get_map(map_path):
 
 
 def run_job(job):
-    """Chạy 1 job (case, planner, mode, run)."""
-    case, planner_name, mode, run_idx, seed, goal_tol = job
+    """Chạy 1 job (case, planner, mode, run[, thư mục lưu đường đi])."""
+    case, planner_name, mode, run_idx, seed, goal_tol = job[:6]
+    paths_dir = job[6] if len(job) > 6 else None
     use_sem = mode == "sem"
     data = _get_map(os.path.join(HERE, case["map_path"]))
     start, goal = tuple(case["start"]), tuple(case["goal"])
@@ -88,7 +89,29 @@ def run_job(job):
         "soft_hazard_hits": v["soft_hazard_hits"], "mean_costmap": v["mean_costmap"],
         "n_waypoints": len(path) if path else 0, "error": err,
     }
+    if paths_dir:
+        save_path_file(paths_dir, rec, path, v)
     return rec
+
+
+def path_file_name(case_id, mode, planner, run):
+    slug = planner.replace("2.5D ", "").replace("*", "star").replace(" ", "_").replace("-", "")
+    return f"{case_id}__{mode}__{slug}__r{run}.json"
+
+
+def save_path_file(paths_dir, rec, path, v):
+    """Lưu toạ độ đường đi + điểm cắt vật cản + chỉ số waypoint vượt lật để vẽ lại."""
+    os.makedirs(paths_dir, exist_ok=True)
+    doc = {k: rec[k] for k in ("case_id", "planner", "mode", "run", "valid", "correct", "reported_success",
+                               "reached", "collision_free", "planning_time_sec", "path_length_3d",
+                               "max_roll_deg", "error")}
+    doc["path"] = [[round(float(p[0]), 3), round(float(p[1]), 3), round(float(p[2]), 3), round(float(p[3]), 4)]
+                   for p in (path or [])]
+    doc["collision_points"] = v.get("collision_points") or []
+    doc["roll_violation_idx"] = v.get("roll_violation_idx") or []
+    with open(os.path.join(paths_dir, path_file_name(rec["case_id"], rec["mode"], rec["planner"], rec["run"])),
+              "w", encoding="utf-8") as f:
+        json.dump(doc, f, ensure_ascii=False)
 
 
 def _mean(xs):
@@ -211,6 +234,8 @@ def main():
     ap.add_argument("--workers", type=int, default=1,
                     help="Số tiến trình song song. >1 nhanh hơn nhưng thời gian đo bị nhiễu do tranh CPU")
     ap.add_argument("--name", default=None, help="Tên thư mục kết quả (mặc định theo thời gian)")
+    ap.add_argument("--save-paths", action="store_true",
+                    help="Lưu toạ độ đường đi từng job vào <run>/paths/ (để vẽ bằng plot_results.py)")
     ap.add_argument("--resume", action="store_true",
                     help="Tiếp tục run dở (cùng --name): bỏ qua job đã có trong results.partial.jsonl")
     ap.add_argument("--log-root", default=DEFAULT_LOG_ROOT)
@@ -242,6 +267,8 @@ def main():
     out_dir = os.path.join(args.log_root, name)
     os.makedirs(out_dir, exist_ok=True)
     partial_path = os.path.join(out_dir, "results.partial.jsonl")
+    if args.save_paths:
+        jobs = [j + (os.path.join(out_dir, "paths"),) for j in jobs]
 
     # Ghi từng kết quả để có thể resume
     records = []

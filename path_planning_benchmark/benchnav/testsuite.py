@@ -145,13 +145,17 @@ def verify_path(path, start, goal, data, use_semantic, goal_tol):
 
     step = hm.resolution * 0.125
     collisions = 0
+    collision_points = []
     for a, b in zip(pts[:-1], pts[1:]):
         n = max(int(np.ceil(np.hypot(*(b - a)) / step)), 1)
         for t in np.linspace(0.0, 1.0, n + 1):
             x, y = a + t * (b - a)
             if hm.is_occupied_2d(x, y):
                 collisions += 1
+                if len(collision_points) < 200:
+                    collision_points.append([round(float(x), 3), round(float(y), 3)])
     out["collision_samples"] = collisions
+    out["collision_points"] = collision_points
 
     # Roll/pitch đo thống nhất bằng chân đế 3 điểm cho mọi planner
     rolls, pitches = [], []
@@ -163,6 +167,7 @@ def verify_path(path, start, goal, data, use_semantic, goal_tol):
         pitches.append(abs(p))
     out["max_roll_fp_deg"] = float(np.degrees(max(rolls)))
     out["max_pitch_fp_deg"] = float(np.degrees(max(pitches)))
+    out["roll_violation_idx"] = [i for i, r in enumerate(rolls) if r > hm.roll_max]
 
     meta = data["meta"]
     sem, cm = meta.get("semantic"), meta.get("costmap")

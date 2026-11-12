@@ -349,6 +349,8 @@ def main():
     ap.add_argument("--runs", type=int, default=1)
     ap.add_argument("--workers", type=int, default=1, help="Song song (nhanh) / 1 = thời gian đo chính xác")
     ap.add_argument("--goal-tol", type=float, default=1.0, help="Dung sai goal chung (m)")
+    ap.add_argument("--plot", nargs="?", const="all", choices=["all", "failures"], default=None,
+                    help="Lưu đường đi và vẽ ảnh + trang HTML (viewer/index.html); 'failures' = chỉ case có planner hỏng")
     ap.add_argument("--skip", nargs="*", default=[], choices=["maps", "cases", "run"],
                     help="Bỏ qua bước (vd. đã có bản đồ)")
     ap.add_argument("--regen-cases", action="store_true", help="Sinh lại test case dù đã có")
@@ -402,8 +404,15 @@ def main():
                    "--workers", str(args.workers), "--goal-tol", str(args.goal_tol)]
             if args.planners:
                 cmd += ["--planners", *args.planners]
+            if args.plot:
+                cmd += ["--save-paths"]
             run_cmd(cmd, log, BENCH_DIR)
             info["run"] = f"{(time.time() - t) / 60:.1f} phút (phiên này)"
+            if args.plot:
+                log("[3b] Vẽ đường đi (plot_results.py)")
+                run_cmd([py, "plot_results.py", run_dir] + (["--only-failures"] if args.plot == "failures" else []),
+                        log, BENCH_DIR)
+                info["plot"] = os.path.join(run_dir, "viewer", "index.html")
 
         step = "report"
         set_status(run_dir, "running", step)
