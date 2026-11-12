@@ -175,6 +175,33 @@ Còn lệch, chưa sửa: cột "Vượt roll" (bộ kiểm chứng) vẫn 9–3
 - Còn dễ: `saddle`, `slope_band`, `boulders` đều 100%. Dốc trơn không bao giờ chạm giới hạn lật 31.5° vì `rho_max` (29.8°) chặn ô trước.
 - **Field D\* chậm** (7–13 s/case trên bản đồ 40 × 30 m): bảng ổn định 16 hướng + `is_segment_free` mỗi cạnh + tối đa 60.000 vòng khi không có đường → P3-h.
 
+### 1.7 RELLIS-3D sequence 00000: 57 cảnh đại diện (dữ liệu bạn trong nhóm sinh)
+- Dữ liệu: `out_00000/` (2.847 `.npz` jikay của cả sequence, **không commit**, đã `.gitignore` `out_*/`). Cảnh đại diện = 59 frame có ảnh dashboard (0, 1, 2 rồi mỗi 50 frame); bỏ 1 và 2 (trùng 0) → **57 cảnh**, 159 case (57 short, 57 medium, 45 long; 12 bản đồ không đủ case long). Trung bình chỉ **36% ô đi được** (8 frame mẫu: 91%).
+- Lệnh: `generate_testcases.py --maps-list ../logs/rellis00/maps_rep57_rel.txt --per-map 3`, rồi `run_testsuite.py --modes sem geo --workers 2` (log `logs/testsuite/rellis00_rep57*`).
+
+| Mode | Planner | Valid | short / medium / long | Thời gian TB (s, 2 worker) | False success |
+|---|---|---|---|---|---|
+| sem | T-Hybrid A\* | 72% | 84 / 67 / 64% | 0.72 | 0 |
+| sem | RRT\* | 61% | 74 / 58 / 49% | 0.55 | 0 |
+| sem | Field D\* | **89%** | 96 / 88 / 80% | 2.26 | 0 |
+| sem | LazyPRM\* | 82% | 93 / 81 / 69% | 3.58 | 0 |
+| geo | T-Hybrid A\* | 91% | 91 / 91 / 89% | 0.28 | 0 |
+| geo | RRT\* | 77% | 88 / 75 / 67% | 0.66 | 0 |
+| geo | Field D\* | **97%** | 100 / 98 / 93% | 2.02 | 0 |
+| geo | LazyPRM\* | 91% | 95 / 89 / 87% | 2.44 | 0 |
+
+- Thứ hạng khớp bộ tổng hợp: **Field D\* > LazyPRM\* ≈ T-Hybrid A\* > RRT\***. Chế độ `sem` khó hơn `geo` 8–19 điểm (ô ngữ nghĩa nguy hiểm làm hẹp vùng đi được). Hầu hết thất bại là "không tìm được đường" (RRT\* 98 lần), không phải đi sai.
+- 3/159 case không planner nào giải được (frame 2050–2150, cụm cảnh hẹp).
+- Lần chạy đầu lộ **6 false success** (LazyPRM\* 5, T-Hybrid A\* 1), mỗi lần chạm vật cản đúng 1 mẫu: planner kiểm tra cả cạnh dài, bộ kiểm chứng kiểm tra từng đoạn ngắn giữa các điểm xuất ra → lấy mẫu lệch vài cm. Đã sửa: LazyPRM\* kiểm tra đúng các đoạn 0.25 m sẽ xuất ra (cả 2 chiều cạnh); T-Hybrid A\* kiểm tra từng bước 0.4 m của đoạn nối thẳng tới goal. Hồi quy bộ tổng hợp + 40 case: valid giữ nguyên, `false_success = 0`. Đổi lại LazyPRM\* chậm hơn (khoảng 1.5–2× do kiểm tra cạnh 2 chiều).
+- **Lọc trùng theo nội dung (`--dedup`) gần như vô dụng khi xe đang chạy**: 2.847 → 2.183 bản đồ ở ngưỡng 0.25 m. Bản đồ gắn theo xe nên lưới bị dịch theo chuyển động, so khối 2 m không chịu được dịch. Cần lọc theo pose (`--min-move`) hoặc so sánh chịu được dịch chuyển (căn chỉnh trước khi so).
+
+### 1.8 Xem kết quả trực quan
+- `run_testsuite.py --save-paths`: lưu toạ độ đường đi + điểm cắt vật cản + waypoint vượt lật của từng job vào `logs/testsuite/<run>/paths/`.
+- `plot_results.py <run> [--only-failures]`: mỗi (case, chế độ) 1 ảnh 2×2 (mỗi ô 1 planner, cùng bản đồ) + trang `viewer/index.html` lọc theo chế độ / nhóm / trạng thái / planner hỏng. Một khung 1 planner vì 4 màu chồng nhau không phân biệt được với người mù màu (đã kiểm bằng validator của skill dataviz).
+- `auto_pipeline.py --plot` (hoặc `--plot failures`): tự lưu đường đi và vẽ sau bước chạy; link ghi trong `REPORT.md`.
+- Mở trang: chạy `python -m http.server 8765 --directory logs/testsuite` rồi vào `http://localhost:8765/<run>/viewer/index.html` (hoặc mở thẳng file `index.html`). Cấu hình xem trong app: `.claude/launch.json` (tên `test-viewer`, không commit).
+- **Phát hiện nhờ ảnh**: 3 case RELLIS "không planner nào giải được" (frame 2050–2150) đều kẹt ở cùng **một lối thắt hẹp hơn thân xe**. Bộ sinh case coi xe là 1 điểm nên đánh dấu "có đường", nhưng Warthog 1.38 m không qua được → khả năng cao là case âm thật. Cần thêm kiểm tra **khoảng trống dọc đường tham chiếu ≥ nửa bề rộng xe** vào `generate_testcases.py` (P1-a).
+
 ---
 
 ## 2. Cài đặt
